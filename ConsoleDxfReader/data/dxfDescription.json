@@ -1,0 +1,378 @@
+{
+  "doc": {
+    "enum": {
+      "0": {
+        "enum": {
+          "SECTION": {
+            "enum": {
+              "2": {
+                "enum": {
+                  "HEADER": {
+                    "enum": {
+                      "9": {
+                        "enum": {
+                          "$ACADVER": {
+                            "enum": {
+                              "1": {
+                                "value": true
+                              }
+                            }
+                          },
+                          "$INSBASE": {
+                            "enum": {
+                              "10": {
+                                "value": true
+                              },
+                              "20": {
+                                "value": true
+                              },
+                              "30": {
+                                "value": true
+                              }
+                            }
+                          },
+                          "$EXTMIN": {
+                            "enum": {
+                              "10": {
+                                "value": true
+                              },
+                              "20": {
+                                "value": true
+                              },
+                              "30": {
+                                "value": true
+                              }
+                            }
+                          },
+                          "$EXTMAX": {
+                            "enum": {
+                              "10": {
+                                "value": true
+                              },
+                              "20": {
+                                "value": true
+                              },
+                              "30": {
+                                "value": true
+                              }
+                            }
+                          },
+                          "$LIMMIN": {
+                            "enum": {
+                              "10": {
+                                "value": true
+                              },
+                              "20": {
+                                "value": true
+                              },
+                              "30": {
+                                "value": true
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "TABLES": {
+                    "enum": {
+                      "0": {
+                        "enum": {
+                          "TABLE": {
+                            "enum": {
+                              "---notes---": "This entry is the header for a given table",
+
+                              "-1": {
+                                "value": true
+                              },
+                              "2": {
+                                "value": true
+                              },
+                              "5": {
+                                "value": true
+                              },
+                              "102": {
+                                "value": true,
+                                "isRepeat": true
+                              },
+                              "360": {
+                                "value": true
+                              },
+                              "330": {
+                                "value": true
+                              },
+                              "100": {
+                                "value": true
+                              },
+                              "70": {
+                                "value": true
+                              },
+
+                              "0": {
+                                "enum": {
+                                  "---notes---": "these are actual table entries",
+
+                                  "VPORT": {
+                                    "enum": {
+                                      "100": {
+                                        "value": true
+                                      },
+                                      "2": {
+                                        "value": true
+                                      },
+                                      "70": {
+                                        "value": true,
+                                        "isRepeat": true
+                                      },
+                                      "10": {
+                                        "value": true
+                                      },
+                                      "20": {
+                                        "value": true
+                                      },
+                                      "11": {
+                                        "value": true
+                                      },
+                                      "21": {
+                                        "value": true
+                                      },
+                                      "12": {
+                                        "value": true
+                                      },
+                                      "22": {
+                                        "value": true
+                                      },
+                                      "13": {
+                                        "value": true
+                                      },
+                                      "23": {
+                                        "value": true
+                                      },
+                                      "14": {
+                                        "value": true
+                                      },
+                                      "24": {
+                                        "value": true
+                                      },
+                                      "15": {
+                                        "value": true
+                                      },
+                                      "25": {
+                                        "value": true
+                                      },
+                                      "16": {
+                                        "value": true
+                                      },
+                                      "26": {
+                                        "value": true
+                                      },
+                                      "36": {
+                                        "value": true
+                                      },
+                                      "17": {
+                                        "value": true
+                                      },
+                                      "27": {
+                                        "value": true
+                                      },
+                                      "37": {
+                                        "value": true
+                                      },
+                                      "42": {
+                                        "value": true
+                                      },
+                                      "43": {
+                                        "value": true
+                                      },
+                                      "44": {
+                                        "value": true
+                                      },
+                                      "45": {
+                                        "value": true
+                                      },
+                                      "50": {
+                                        "value": true
+                                      },
+                                      "51": {
+                                        "value": true
+                                      },
+                                      "72": {
+                                        "value": true
+                                      },
+                                      "331": {
+                                        "value": true
+                                      },
+                                      "441": {
+                                        "value": true
+                                      },
+                                      "1": {
+                                        "value": true
+                                      },
+                                      "281": {
+                                        "value": true
+                                      },
+                                      "71": {
+                                        "value": true
+                                      },
+                                      "74": {
+                                        "value": true
+                                      },
+                                      "110": {
+                                        "value": true
+                                      },
+                                      "120": {
+                                        "value": true
+                                      },
+                                      "130": {
+                                        "value": true
+                                      },
+                                      "111": {
+                                        "value": true
+                                      },
+                                      "121": {
+                                        "value": true
+                                      },
+                                      "131": {
+                                        "value": true
+                                      },
+                                      "112": {
+                                        "value": true
+                                      },
+                                      "122": {
+                                        "value": true
+                                      },
+                                      "132": {
+                                        "value": true
+                                      },
+                                      "345": {
+                                        "value": true
+                                      },
+                                      "346": {
+                                        "value": true
+                                      },
+                                      "79": {
+                                        "value": true
+                                      },
+                                      "146": {
+                                        "value": true
+                                      },
+                                      "170": {
+                                        "value": true
+                                      },
+                                      "61": {
+                                        "value": true
+                                      },
+                                      "332": {
+                                        "value": true
+                                      },
+                                      "333": {
+                                        "value": true
+                                      },
+                                      "348": {
+                                        "value": true
+                                      },
+                                      "292": {
+                                        "value": true
+                                      },
+                                      "282": {
+                                        "value": true
+                                      },
+                                      "141": {
+                                        "value": true
+                                      },
+                                      "142": {
+                                        "value": true
+                                      },
+                                      "63": {
+                                        "value": true
+                                      },
+                                      "421": {
+                                        "value": true
+                                      },
+                                      "431": {
+                                        "value": true
+                                      }
+                                    }
+                                  },
+                                  "LTYPE": {
+                                    "enum": {
+                                      "100": {
+                                        "value": true
+                                      },
+                                      "2": {
+                                        "value": true
+                                      },
+                                      "70": {
+                                        "value": true
+                                      },
+                                      "3": {
+                                        "value": true
+                                      },
+                                      "72": {
+                                        "value": true
+                                      },
+                                      "73": {
+                                        "value": true
+                                      },
+                                      "40": {
+                                        "value": true
+                                      },
+                                      "49": {
+                                        "value": true
+                                      },
+                                      "74": {
+                                        "value": true
+                                      },
+                                      "75": {
+                                        "value": true
+                                      },
+                                      "340": {
+                                        "value": true
+                                      },
+                                      "46": {
+                                        "value": true
+                                      },
+                                      "50": {
+                                        "value": true
+                                      },
+                                      "44": {
+                                        "value": true
+                                      },
+                                      "45": {
+                                        "value": true
+                                      },
+                                      "9": {
+                                        "value": true
+                                      }
+                                    }
+                                  },
+                                  "ENDTAB": {
+                                    "isEnd": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "0": {
+                "enum": {
+                  "ENDSEC": {
+                    "isEnd": true
+                  }
+                }
+              }
+            }
+          },
+          "EOF": {
+            "isEnd": true
+          }
+        }
+      }
+    }
+  }
+}
