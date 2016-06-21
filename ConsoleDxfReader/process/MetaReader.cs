@@ -15,6 +15,7 @@ namespace ConsoleDxfReader.process
         {
             CODES,
             END,
+            VALUE,
             UNKNOWN
         }
 
@@ -67,6 +68,10 @@ namespace ConsoleDxfReader.process
             else if (descriptor["isEnd"] != null)
             {
                 return KEY_DESCRIPTOR_TYPE.END;
+            }
+            else if (descriptor["isEnd"] != null)
+            {
+                return KEY_DESCRIPTOR_TYPE.VALUE;
             }
             else
             {

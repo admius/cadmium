@@ -24,6 +24,8 @@ namespace ConsoleDxfReader
             //read the document structure
             DataObject docObject = new StructureObject("0", "doc", metaReader.DocDesciptor, entryReader);
 
+            docObject.debugPrint(0);
+
         }
     }
 }

@@ -8,11 +8,21 @@ namespace ConsoleDxfReader.process
 {
     class StructureObject : DataObject
     {
-        private List<DataObject> children = null;
+        private List<DataObject> children = new List<DataObject>();
 
         public StructureObject(string code, string value, dynamic descriptor, EntryReader dxfReader) : base(code,value)
         {
             ReadChildren(descriptor,dxfReader);
+        }
+
+        public override void debugPrint(int indentCount)
+        {
+            //write this object and, indented, each child
+            base.debugPrint(indentCount);
+            foreach(DataObject child in children)
+            {
+                child.debugPrint(indentCount + 1);
+            }
         }
 
         // PRIVATE MEMBERS
@@ -61,6 +71,12 @@ namespace ConsoleDxfReader.process
                                 //this is an end entry, go back to parent
                                 readingChildren = false;
                             }
+                            else if (MetaReader.getKeyDescriptorType(keyDescriptor) == MetaReader.KEY_DESCRIPTOR_TYPE.VALUE)
+                            {
+                                //this is a simple value
+                                childEntry = new DataObject(code, value);
+                                this.children.Add(childEntry);
+                            }
                         }
                     }
                     else if (MetaReader.getValueDescriptorType(valueDescriptor) == MetaReader.VALUE_DESCRIPTOR_TYPE.VALUE)
@@ -68,7 +84,6 @@ namespace ConsoleDxfReader.process
                         //this is a simple value
                         childEntry = new DataObject(code, value);
                         this.children.Add(childEntry);
-                        readingChildren = false;
                     }
 
                 }
