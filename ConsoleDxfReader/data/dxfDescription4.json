@@ -1,0 +1,107 @@
+{
+  "parsers": {
+    "DOC": {
+      "parserClass": "ListSegment",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "EOF",
+          "body":{}
+        },
+        { "parserName": "SECTION" }
+      ]
+    },
+    "SECTION": {
+      "parserClass": "DelimitedSegmentSet",
+      "bodyParser": {
+        "headerField": "sectionType"
+      },
+      "header": {
+        "delimCode": 0,
+        "delimValue": "SECTION",
+        "body": {
+          "2": "sectionType"
+        }
+      },
+      "footer": {
+        "delimCode": 0,
+        "delimValue": "ENDSEC",
+        "body": {
+        }
+      }
+
+    },
+    "HEADER": {
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "VariableSegment",
+          "delimCode": "9"
+        }
+      ]
+    },
+    "CLASSES": {
+      "parserClass": "GenericSegment"
+    },
+    "TABLES": {
+      "parserClass": "DelimitedSegmentSet",
+      "bodyParser": {
+        "headerField": "tableType"
+      },
+      "header": {
+        "delimCode": 0,
+        "delimValue": "Table",
+        "body": {
+          "2": "tableType",
+          "5": "handle",
+          "105": "handle",
+          "100": "AcDbSymbolTable",
+          "70": "MaxNumEntries"
+        }
+      },
+      "footer": {
+        "delimCode": 0,
+        "delimValue": "ENDTAB",
+        "body": {
+        }
+      }
+    },
+    "BLOCKS": {
+      "parserClass": "GenericSegment"
+    },
+    "ENTITIES": {
+      "parserClass": "GenericSegment"
+    },
+    "OBJECTS": {
+      "parserClass": "GenericSegment"
+    },
+    "APPID": {
+      "parserClass": "GenericSegment"
+    },
+    "BLOCK_RECORD": {
+      "parserClass": "GenericSegment"
+    },
+    "DIMSTYLE": {
+      "parserClass": "GenericSegment"
+    },
+    "LAYER": {
+      "parserClass": "GenericSegment"
+    },
+    "LTYPE": {
+      "parserClass": "GenericSegment"
+    },
+    "STYLE": {
+      "parserClass": "GenericSegment"
+    },
+    "UCS": {
+      "parserClass": "GenericSegment"
+    },
+    "VIEW": {
+      "parserClass": "GenericSegment"
+    },
+    "VPORT": {
+      "parserClass": "GenericSegment"
+    }
+  }
+}

@@ -23,7 +23,7 @@ namespace ConsoleDxfReader.Io
 
                 while ((line = file.ReadLine()) != null)
                 {
-                    fileLines.Add(line.Trim());
+                    fileLines.Add(line);
                 }
             }
             finally

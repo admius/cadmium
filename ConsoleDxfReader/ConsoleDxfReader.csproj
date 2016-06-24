@@ -48,16 +48,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="io\DynamicJsonConverter.cs" />
+    <Compile Include="io\JsonLoader.cs" />
     <Compile Include="io\LineReader.cs" />
-    <Compile Include="process\StructureObject.cs" />
-    <Compile Include="process\DataObject.cs" />
+    <Compile Include="parsers\DelimitedSegmentSet.cs" />
+    <Compile Include="parsers\DxfParser.cs" />
+    <Compile Include="parsers\SegmentList.cs" />
+    <Compile Include="parsers\ParserFactory.cs" />
+    <Compile Include="parsers\FixedSegment.cs" />
+    <Compile Include="parsers\VariableSegment.cs" />
+    <Compile Include="process\DxfEntry.cs" />
+    <Compile Include="process\DxfDelimitedObject.cs" />
+    <Compile Include="process\DxfListObject.cs" />
+    <Compile Include="process\DxfObject.cs" />
+    <Compile Include="process\DxfProperty.cs" />
+    <Compile Include="process\DxfSimpleObject.cs" />
     <Compile Include="process\EntryReader.cs" />
-    <Compile Include="process\MetaReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="data\dxfDescription4.json" />
     <None Include="data\dxfDescription3.json" />
     <None Include="data\dxfDescription2.json" />
     <None Include="data\short.dxf" />

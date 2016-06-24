@@ -18,13 +18,22 @@ namespace ConsoleDxfReader.process
             this.lines = lines;
         }
 
-        /// <summary>
-        /// This method should be called when a line should be "unread", for example when we want to read it again.
-        /// </summary>
-        public void pushBack()
+        public DxfEntry readEntry()
         {
-            this.currentLine -= 1;
+            if (currentLine < lines.Count - 2)
+            {
+                DxfEntry entry = new DxfEntry();
+                entry.code = readString().Trim();
+                entry.value = readString().Trim();
+                return entry;
+            }
+            else
+            {
+                return null;
+            }
         }
+
+        //we should not use the below methods pubicly
 
 
         /// <summary>
@@ -51,7 +60,7 @@ namespace ConsoleDxfReader.process
         /// <returns></returns>
         public int readInt(int? requiredValue = null)
         {
-            string line = readString();
+            string line = readString().Trim();
             int value = Int32.Parse(line);
             if ((requiredValue != null)&&(value != requiredValue))
             {
@@ -70,6 +79,15 @@ namespace ConsoleDxfReader.process
         {
             return parseDelegate(this);
         }
+
+        /// <summary>
+        /// This method should be called when a line should be "unread", for example when we want to read it again.
+        /// </summary>
+        public void pushBack()
+        {
+            this.currentLine -= 1;
+        }
+
 
 
         private void throwUnexpectedLine(object expected, object read)

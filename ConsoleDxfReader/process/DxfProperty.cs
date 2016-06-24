@@ -6,25 +6,15 @@ using System.Threading.Tasks;
 
 namespace ConsoleDxfReader.process
 {
-    class DataObject
+    class DxfProperty
     {
-        private string code;
-        private string value = null;
+        public string key;
+        public string value;
 
-        public DataObject(string code,  string value)
+        public DxfProperty(string key, string value)
         {
-            this.code = code;
+            this.key = key;
             this.value = value;
-        }
-
-        public string Code
-        {
-            get { return this.code; }
-        }
-
-        public string Value
-        {
-            get { return this.value; }
         }
 
         public virtual void debugPrint(int indentCount)
@@ -33,7 +23,7 @@ namespace ConsoleDxfReader.process
             {
                 Console.Write("\t");
             }
-            Console.WriteLine(code + ": " + value);
+            Console.WriteLine(key + ": " + value);
         }
     }
 }
