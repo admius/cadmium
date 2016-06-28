@@ -21,7 +21,7 @@ namespace ConsoleDxfReader.parsers
         public DxfObject DataObject
         {
             get { return dataObject; }
-            set { dataObject = DataObject; }
+            set { dataObject = value; }
         }
     }
 }

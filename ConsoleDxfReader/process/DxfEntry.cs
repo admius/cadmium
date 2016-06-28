@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +12,13 @@ namespace ConsoleDxfReader.process
         public string code;
         public string value;
 
-        public void debugPrint(int indentCount)
+        public void DebugPrint(StreamWriter stream, int indentCount)
         {
             for (int i = 0; i < indentCount; i++)
             {
-                Console.Write("\t");
+                stream.Write("\t");
             }
-            Console.WriteLine(code + ": " + value);
+            stream.WriteLine(code + ": " + value);
         }
     }
 }

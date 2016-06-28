@@ -16,23 +16,65 @@ namespace ConsoleDxfReader.parsers
     {
         private List<DxfParser> parsers = new List<DxfParser>();
         private DxfParser activeParser = null;
+        private String typeName;
 
         public SegmentList(dynamic config, ParserFactory parserFactory)
         {
             dynamic parserList = config["parsers"];
-            foreach (string parserName in parserList)
+            foreach (dynamic childConfig in parserList)
             {
-                DxfParser parser = parserFactory.GetParser(parserName);
+                DxfParser parser = parserFactory.GetParser(childConfig);
                 parsers.Add(parser);
+            }
+
+            if (config["typeName"] != null)
+            {
+                typeName = config["typeName"];
+            }
+            else
+            {
+                typeName = "List";
             }
         }
 
+        /// <summary>
+        /// This is the extenal delimiter check. If this is a delimiter a new object is initialized
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
         public override bool IsDelimiter(DxfEntry entry)
         {
-            bool isDelimiter = InternalIsDelimiter(entry);
-            if(isDelimiter)
+            bool isDelim = DelimiterCheck(entry);
+
+            if (isDelim)
             {
-                DataObject = new DxfListObject("xxx");
+                //create list data object
+                DataObject = new DxfListObject();
+                DataObject.Type = this.typeName;
+                //add latest entry to list
+                ((DxfListObject)DataObject).AddEntry(activeParser.DataObject);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+
+        /// <summary>
+        /// This is the internal delimiter check, to see if we are starting a new list entry. If so,
+        /// a new data object is initialized and added to the overall list.
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        private bool InternalIsDelimiter(DxfEntry entry)
+        {
+            bool isDelim = DelimiterCheck(entry);
+            if (isDelim)
+            {
+                //add latest entry to list
+                ((DxfListObject)DataObject).AddEntry(activeParser.DataObject);
                 return true;
             }
             else
@@ -41,14 +83,17 @@ namespace ConsoleDxfReader.parsers
             }
         }
 
-        public bool InternalIsDelimiter(DxfEntry entry)
-        {
+        /// <summary>
+        /// This method checks if the entry is a delimitere for a segment in the list.
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        private bool DelimiterCheck(DxfEntry entry) { 
             foreach (DxfParser parser in parsers)
             {
                 if (parser.IsDelimiter(entry))
                 {
-                    //add this newly started object to the object list
-                    ((DxfListObject)DataObject).AddEntry(parser.DataObject);
+                    //set as the active parser
                     activeParser = parser;
                     return true;
                 }
@@ -61,7 +106,7 @@ namespace ConsoleDxfReader.parsers
         public override void AddEntry(DxfEntry entry)
         {
             //check if this is a new entry
-            if (IsDelimiter(entry))
+            if (InternalIsDelimiter(entry))
             {
                 //this sets up the new object in the call. just return now.
                 return;

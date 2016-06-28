@@ -1,13 +1,14 @@
 {
   "parsers": {
     "DOC": {
-      "parserClass": "ListSegment",
+      "parserClass": "SegmentList",
+      "typeName": "Document",
       "parsers": [
         {
           "parserClass": "FixedSegment",
           "delimCode": "0",
           "delimValue": "EOF",
-          "body":{}
+          "body": { }
         },
         { "parserName": "SECTION" }
       ]
@@ -15,25 +16,27 @@
     "SECTION": {
       "parserClass": "DelimitedSegmentSet",
       "bodyParser": {
+        "parserNamePrefix": "Section:",
         "headerField": "sectionType"
       },
       "header": {
-        "delimCode": 0,
+        "delimCode": "0",
         "delimValue": "SECTION",
         "body": {
           "2": "sectionType"
         }
       },
       "footer": {
-        "delimCode": 0,
+        "delimCode": "0",
         "delimValue": "ENDSEC",
         "body": {
         }
       }
 
     },
-    "HEADER": {
+    "Section:HEADER": {
       "parserClass": "SegmentList",
+      "typeName": "Header",
       "parsers": [
         {
           "parserClass": "VariableSegment",
@@ -41,67 +44,644 @@
         }
       ]
     },
-    "CLASSES": {
-      "parserClass": "GenericSegment"
+    "Section:CLASSES": {
+      "parserClass": "SegmentList",
+      "typeName": "Classes",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "CLASS",
+          "body": {
+
+          }
+        }
+      ]
+
     },
-    "TABLES": {
-      "parserClass": "DelimitedSegmentSet",
-      "bodyParser": {
-        "headerField": "tableType"
-      },
-      "header": {
-        "delimCode": 0,
-        "delimValue": "Table",
-        "body": {
-          "2": "tableType",
-          "5": "handle",
-          "105": "handle",
-          "100": "AcDbSymbolTable",
-          "70": "MaxNumEntries"
+    "Section:TABLES": {
+      "parserClass": "SegmentList",
+      "typeName": "Tables",
+      "parsers": [
+        {
+          "parserClass": "DelimitedSegmentSet",
+          "bodyParser": {
+            "parserNamePrefix": "Table:",
+            "headerField": "tableType"
+          },
+          "header": {
+            "delimCode": "0",
+            "delimValue": "TABLE",
+            "body": {
+              "2": "tableType",
+              "5": "handle",
+              "105": "handle",
+              "100": "AcDbSymbolTable",
+              "70": "MaxNumEntries"
+            }
+          },
+          "footer": {
+            "delimCode": "0",
+            "delimValue": "ENDTAB",
+            "body": {
+            }
+          }
         }
-      },
-      "footer": {
-        "delimCode": 0,
-        "delimValue": "ENDTAB",
-        "body": {
+      ]
+    },
+    "Section:BLOCKS": {
+      "parserClass": "SegmentList",
+      "typeName": "Blocks",
+      "parsers": [
+        {
+          "parserClass": "DelimitedSegmentSet",
+          "bodyParser": {
+            "parserName": "Section:ENTITIES"
+          },
+          "header": {
+            "delimCode": "0",
+            "delimValue": "BLOCK",
+            "body": {
+              "5": "handle"
+            }
+          },
+          "footer": {
+            "delimCode": "0",
+            "delimValue": "ENDBLK",
+            "body": {
+            }
+          }
         }
+      ]
+    },
+    "Section:ENTITIES": {
+      "parserClass": "SegmentList",
+      "typeName": "Entities",
+      "parsers": [
+        {
+          "parserName": "Entity:3DFACE"
+        },
+        {
+          "parserName": "Entity:3DSOLID"
+        },
+        {
+          "parserName": "Entity:ACAD_PROXY_ENTITY"
+        },
+        {
+          "parserName": "Entity:ARC"
+        },
+        {
+          "parserName": "Entity:ATTDEF"
+        },
+        {
+          "parserName": "Entity:ATTRIB"
+        },
+        {
+          "parserName": "Entity:BODY"
+        },
+        {
+          "parserName": "Entity:CIRCLE"
+        },
+        {
+          "parserName": "Entity:DIMENSION"
+        },
+        {
+          "parserName": "Entity:ELLIPSE"
+        },
+        {
+          "parserName": "Entity:HATCH"
+        },
+        {
+          "parserName": "Entity:IMAGE"
+        },
+        {
+          "parserName": "Entity:INSERT"
+        },
+        {
+          "parserName": "Entity:LEADER"
+        },
+        {
+          "parserName": "Entity:LINE"
+        },
+        {
+          "parserName": "Entity:LWPOLYLINE"
+        },
+        {
+          "parserName": "Entity:MLINE"
+        },
+        {
+          "parserName": "Entity:MTEXT"
+        },
+        {
+          "parserName": "Entity:OLEFRAME"
+        },
+        {
+          "parserName": "Entity:OLE2FRAME"
+        },
+        {
+          "parserName": "Entity:POINT"
+        },
+        {
+          "parserName": "Entity:POLYLINE"
+        },
+        {
+          "parserName": "Entity:RAY"
+        },
+        {
+          "parserName": "Entity:REGION"
+        },
+        {
+          "parserName": "Entity:SEQEND"
+        },
+        {
+          "parserName": "Entity:SHAPE"
+        },
+        {
+          "parserName": "Entity:SOLID"
+        },
+        {
+          "parserName": "Entity:SPLINE"
+        },
+        {
+          "parserName": "Entity:TEXT"
+        },
+        {
+          "parserName": "Entity:TOLERANCE"
+        },
+        {
+          "parserName": "Entity:TRACE"
+        },
+        {
+          "parserName": "Entity:VERTEX"
+        },
+        {
+          "parserName": "Entity:VIEWPORT"
+        },
+        {
+          "parserName": "Entity:XLINE"
+        }
+      ]
+    },
+    "Section:OBJECTS": {
+      "parserClass": "SegmentList",
+      "typeName": "Objects",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "DICTIONARY",
+          "body": {
+
+          }
+        },
+        {
+          "parserClass": "VariableSegment",
+          "delimCode": "3"
+        },
+        {
+          "parserName": "Object:ACAD_PROXY_OBJECT"
+        },
+        {
+          "parserName": "Object:DICTIONARY"
+        },
+        {
+          "parserName": "Object:DICTIONARYVAR"
+        },
+        {
+          "parserName": "Object:GROUP"
+        },
+        {
+          "parserName": "Object:IDBUFFER"
+        },
+        {
+          "parserName": "Object:IMAGEDEF"
+        },
+        {
+          "parserName": "Object:IMAGEDEF_REACTOR"
+        },
+        {
+          "parserName": "Object:LAYER_INDEX"
+        },
+        {
+          "parserName": "Object:MLINESTYLE"
+        },
+        {
+          "parserName": "Object:OBJECT_PTR"
+        },
+        {
+          "parserName": "Object:RASTERVARIABLES"
+        },
+        {
+          "parserName": "Object:SPATIAL_INDEX"
+        },
+        {
+          "parserName": "Object:SPATIAL_FILTER"
+        },
+        {
+          "parserName": "Object:SORTENTSTABLE"
+        },
+        {
+          "parserName": "Object:XRECORD"
+        }
+      ]
+    },
+
+
+    "Table:APPID": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "APPID",
+      "body": {
       }
     },
-    "BLOCKS": {
-      "parserClass": "GenericSegment"
+    "Table:BLOCK_RECORD": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "BLOCK_RECORD",
+      "body": {
+      }
     },
-    "ENTITIES": {
-      "parserClass": "GenericSegment"
+    "Table:DIMSTYLE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "DIMSTYLE",
+      "body": {
+      }
     },
-    "OBJECTS": {
-      "parserClass": "GenericSegment"
+    "Table:LAYER": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "LAYER",
+      "body": {
+      }
     },
-    "APPID": {
-      "parserClass": "GenericSegment"
+    "Table:LTYPE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "LTYPE",
+      "body": {
+      }
     },
-    "BLOCK_RECORD": {
-      "parserClass": "GenericSegment"
+    "Table:STYLE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "STYLE",
+      "body": {
+      }
     },
-    "DIMSTYLE": {
-      "parserClass": "GenericSegment"
+    "Table:UCS": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "UCS",
+      "body": {
+      }
     },
-    "LAYER": {
-      "parserClass": "GenericSegment"
+    "Table:VIEW": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "VIEW",
+      "body": {
+      }
     },
-    "LTYPE": {
-      "parserClass": "GenericSegment"
+    "Table:VPORT": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "VPORT",
+      "body": {
+      }
     },
-    "STYLE": {
-      "parserClass": "GenericSegment"
+
+
+    "Entity:3DFACE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "3DFACE",
+      "body": {
+      }
     },
-    "UCS": {
-      "parserClass": "GenericSegment"
+    "Entity:3DSOLID": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "3DSOLID",
+      "body": {
+      }
     },
-    "VIEW": {
-      "parserClass": "GenericSegment"
+    "Entity:ACAD_PROXY_ENTITY": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "ACAD_PROXY_ENTITY",
+      "body": {
+      }
     },
-    "VPORT": {
-      "parserClass": "GenericSegment"
+    "Entity:ARC": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "ARC",
+      "body": {
+      }
+    },
+    "Entity:ATTDEF": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "ATTDEF",
+      "body": {
+      }
+    },
+    "Entity:ATTRIB": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "ATTRIB",
+      "body": {
+      }
+    },
+    "Entity:BODY": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "BODY",
+      "body": {
+      }
+    },
+    "Entity:CIRCLE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "CIRCLE",
+      "body": {
+      }
+    },
+    "Entity:DIMENSION": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "DIMENSION",
+      "body": {
+      }
+    },
+    "Entity:ELLIPSE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "ELLIPSE",
+      "body": {
+      }
+    },
+    "Entity:HATCH": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "HATCH",
+      "body": {
+      }
+    },
+    "Entity:IMAGE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "IMAGE",
+      "body": {
+      }
+    },
+    "Entity:INSERT": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "INSERT",
+      "body": {
+      }
+    },
+    "Entity:LEADER": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "LEADER",
+      "body": {
+      }
+    },
+    "Entity:LINE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "LINE",
+      "body": {
+      }
+    },
+    "Entity:LWPOLYLINE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "LWPOLYLINE",
+      "body": {
+      }
+    },
+    "Entity:MLINE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "MLINE",
+      "body": {
+      }
+    },
+    "Entity:MTEXT": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "MTEXT",
+      "body": {
+      }
+    },
+    "Entity:OLEFRAME": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "OLEFRAME",
+      "body": {
+      }
+    },
+    "Entity:OLE2FRAME": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "OLE2FRAME",
+      "body": {
+      }
+    },
+    "Entity:POINT": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "POINT",
+      "body": {
+      }
+    },
+    "Entity:POLYLINE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "POLYLINE",
+      "body": {
+      }
+    },
+    "Entity:RAY": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "RAY",
+      "body": {
+      }
+    },
+    "Entity:REGION": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "REGION",
+      "body": {
+      }
+    },
+    "Entity:SEQEND": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "SEQEND",
+      "body": {
+      }
+    },
+    "Entity:SHAPE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "SHAPE",
+      "body": {
+      }
+    },
+    "Entity:SOLID": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "SOLID",
+      "body": {
+      }
+    },
+    "Entity:SPLINE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "SPLINE",
+      "body": {
+      }
+    },
+    "Entity:TEXT": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "TEXT",
+      "body": {
+      }
+    },
+    "Entity:TOLERANCE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "TOLERANCE",
+      "body": {
+      }
+    },
+    "Entity:TRACE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "TRACE",
+      "body": {
+      }
+    },
+    "Entity:VERTEX": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "VERTEX",
+      "body": {
+      }
+    },
+    "Entity:VIEWPORT": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "VIEWPORT",
+      "body": {
+      }
+    },
+    "Entity:XLINE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "XLINE",
+      "body": {
+      }
+    },
+
+
+    "Object:ACAD_PROXY_OBJECT": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "ACAD_PROXY_OBJECT",
+      "body": { }
+    },
+    "Object:DICTIONARY": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "DICTIONARY",
+      "body": { }
+    },
+    "Object:DICTIONARYVAR": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "DICTIONARYVAR",
+      "body": { }
+    },
+    "Object:GROUP": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "GROUP",
+      "body": { }
+    },
+    "Object:IDBUFFER": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "IDBUFFER",
+      "body": { }
+    },
+    "Object:IMAGEDEF": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "IMAGEDEF",
+      "body": { }
+    },
+    "Object:IMAGEDEF_REACTOR": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "IMAGEDEF_REACTOR",
+      "body": { }
+    },
+    "Object:LAYER_INDEX": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "LAYER_INDEX",
+      "body": { }
+    },
+    "Object:MLINESTYLE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "MLINESTYLE",
+      "body": { }
+    },
+    "Object:OBJECT_PTR": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "OBJECT_PTR",
+      "body": { }
+    },
+    "Object:RASTERVARIABLES": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "RASTERVARIABLES",
+      "body": { }
+    },
+    "Object:SPATIAL_INDEX": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "SPATIAL_INDEX",
+      "body": { }
+    },
+    "Object:SPATIAL_FILTER": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "SPATIAL_FILTER",
+      "body": { }
+    },
+    "Object:SORTENTSTABLE": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "SORTENTSTABLE",
+      "body": { }
+    },
+    "Object:XRECORD": {
+      "parserClass": "FixedSegment",
+      "delimCode": "0",
+      "delimValue": "XRECORD",
+      "body": { }
     }
+
   }
 }

@@ -26,7 +26,8 @@ namespace ConsoleDxfReader.parsers
             if(entry.code.Equals(delimCode))
             {
                 //instantiate object with proper name
-                DataObject = new DxfSimpleObject(entry.value);
+                DataObject = new DxfSimpleObject();
+                DataObject.Type = entry.value;
                 return true;
             }
             else

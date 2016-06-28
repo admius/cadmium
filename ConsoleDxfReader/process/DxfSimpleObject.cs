@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace ConsoleDxfReader.process
     {
         private List<DxfProperty> properties = new List<DxfProperty>();
 
-        public DxfSimpleObject(string type) : base(type)
+        public DxfSimpleObject() : base()
         {
         }
 
@@ -19,12 +20,24 @@ namespace ConsoleDxfReader.process
             properties.Add(property);
         }
 
-        public override void debugPrint(int indentCount)
+        public DxfProperty GetProperty(string key)
         {
-            base.debugPrint(indentCount);
+            foreach(DxfProperty prop in properties)
+            {
+                if(prop.key.Equals(key))
+                {
+                    return prop;
+                }
+            }
+            return null;
+        }
+
+        public override void DebugPrint(StreamWriter stream, int indentCount)
+        {
+            base.DebugPrint(stream, indentCount);
             foreach (DxfProperty property in properties)
             {
-                property.debugPrint(indentCount + 1);
+                property.DebugPrint(stream, indentCount + 1);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,25 +9,25 @@ namespace ConsoleDxfReader.process
 {
     class DxfObject
     {
-        private string type;
-        public DxfObject(string type)
+        private string type = "<unspecified>";
+        public DxfObject()
         {
-            this.type = type;
         }
 
         public string Type
         {
             get { return type; }
+            set { type = value;  }
         }
 
 
-        public virtual void debugPrint(int indentCount)
+        public virtual void DebugPrint(StreamWriter stream, int indentCount)
         {
             for (int i = 0; i < indentCount; i++)
             {
-                Console.Write("\t");
+                stream.Write("\t");
             }
-            Console.WriteLine(type);
+            stream.WriteLine(type);
         }
     }
 }

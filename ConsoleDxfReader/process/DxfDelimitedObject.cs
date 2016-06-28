@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,35 +13,42 @@ namespace ConsoleDxfReader.process
         private DxfObject body;
         private DxfObject footer;
 
-        public DxfDelimitedObject(string type) : base(type)
+        public DxfDelimitedObject() : base()
         {
         }
 
         public DxfObject Header
         {
-            set { header = Header; }
+            set {
+                header = value;
+                Type = header.Type + " Group";
+            }
             get { return header; }
         }
 
         public DxfObject Footer
         {
-            set { header = Header; }
-            get { return header; }
+            set { footer = value; }
+            get { return footer; }
         }
 
         public DxfObject Body
         {
-            set { body = Body; }
+            set { body = value; }
             get { return body; }
         }
 
-        public void DebugPrint(int indentCount)
+        public override void DebugPrint(StreamWriter stream, int indentCount)
         {
-            header.debugPrint(indentCount);
-            Console.WriteLine("----------");
-            body.debugPrint(indentCount + 1);
-            Console.WriteLine("----------");
-            footer.debugPrint(indentCount);
+            base.DebugPrint(stream, indentCount);
+            header.DebugPrint(stream, indentCount + 1);
+            stream.WriteLine();
+            if (body != null)
+            {
+                body.DebugPrint(stream, indentCount + 1);
+                stream.WriteLine();
+            }
+            footer.DebugPrint(stream, indentCount + 1);
         }
     }
 }

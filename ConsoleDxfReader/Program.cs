@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace ConsoleDxfReader
         {
             string configFile = args[0];
             string dxfFile = args[1];
+            string outputFile = args[2];
 
             //load config
             dynamic configData = JsonLoader.open(configFile);
@@ -33,6 +35,7 @@ namespace ConsoleDxfReader
             bool started = false;
             while ((entry = entryReader.readEntry()) != null)
             {
+//                Console.WriteLine("Entry: " + entry.code + ": " + entry.value);
                 if (!started)
                 {
                     //this better be true
@@ -49,9 +52,12 @@ namespace ConsoleDxfReader
                 }
             }
 
-            DxfObject docObject = docParser.DataObject;
-            docObject.debugPrint(0);
-
+            //write the output to a file
+            using (StreamWriter fileStream = new StreamWriter(outputFile))
+            {
+                DxfObject docObject = docParser.DataObject;
+                docObject.DebugPrint(fileStream,0);
+            }
         }
     }
 }

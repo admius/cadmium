@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,8 @@ namespace ConsoleDxfReader.parsers
         private DxfParser bodyParser;
         private FixedSegment footerParser;
 
+        private dynamic bodyParserInfo;
+
         private ParseState parseState;
 
         private ParserFactory parserFactory;
@@ -31,7 +34,10 @@ namespace ConsoleDxfReader.parsers
             headerParser = new FixedSegment(config["header"]);
             footerParser = new FixedSegment(config["footer"]);
 
+            bodyParserInfo = config["bodyParser"];
+
             parseState = ParseState.HEADER;
+            bodyParser = null;
         }
 
         public override bool IsDelimiter(DxfEntry entry)
@@ -39,7 +45,12 @@ namespace ConsoleDxfReader.parsers
             bool isDelim = headerParser.IsDelimiter(entry);
             if(isDelim)
             {
-                DataObject = new DxfDelimitedObject("delimited segment - save name!");
+                //set parse state to header, clear the body parser
+                parseState = ParseState.HEADER;
+                bodyParser = null;
+
+                //prepare to read header body
+                DataObject = new DxfDelimitedObject();
                 ((DxfDelimitedObject)DataObject).Header = headerParser.DataObject;
                 return true;
             }
@@ -55,24 +66,26 @@ namespace ConsoleDxfReader.parsers
             {
                 case ParseState.HEADER:
                     //check if we should go to the next state
-                    if(bodyParser.IsDelimiter(entry))
-                    {    
+                    if (footerParser.IsDelimiter(entry))
+                    {
+                        //start footer, no body
+                        parseState = ParseState.FOOTER;
+                        ((DxfDelimitedObject)DataObject).Footer = footerParser.DataObject;
+                    }
+                    else if ((bodyParser != null)&&(bodyParser.IsDelimiter(entry)))
+                    {
                         //body starting
                         parseState = ParseState.BODY;
                         ((DxfDelimitedObject)DataObject).Body = bodyParser.DataObject;
-                    }
-                    else if(footerParser.IsDelimiter(entry))
-                    {
-                        //no body
-                        parseState = ParseState.FOOTER;
-                        ((DxfDelimitedObject)DataObject).Footer = footerParser.DataObject;
                     }
                     else
                     {
                         //still in header
                         headerParser.AddEntry(entry);
-//NEED TO GET THE BODY PARSER!!! - might not be ready yet though
-//read the body parser - might be "headerField" for the name. Thing of other options
+                        if(bodyParser == null)
+                        {
+                            TryToLoadBodyParser();
+                        }
                     }
                     break;
 
@@ -96,6 +109,31 @@ namespace ConsoleDxfReader.parsers
             }
         }
 
-        
+        /// <summary>
+        /// This gets the body parser, as read from the header
+        /// </summary>
+        private void TryToLoadBodyParser()
+        {
+            if(bodyParserInfo["headerField"] != null)
+            {
+                //this will only work once the field is loaded. We have to keep trying until it is. 
+                string headerField = bodyParserInfo["headerField"];
+                DxfSimpleObject headerObject = (DxfSimpleObject)(((DxfDelimitedObject)(this.DataObject)).Header);
+                if (headerObject != null)
+                {
+                    DxfProperty property = headerObject.GetProperty(headerField);
+                    string prefix = bodyParserInfo["parserNamePrefix"] != null ? bodyParserInfo["parserNamePrefix"] : "";
+                    string parserName = prefix + property.value;
+
+                    bodyParser = parserFactory.GetParser(parserName);
+                }   
+            }
+            else
+            {
+                bodyParser = parserFactory.GetParser(bodyParserInfo);
+            }
+
+        }
     }
+
 }

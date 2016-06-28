@@ -31,7 +31,8 @@ namespace ConsoleDxfReader.parsers
 
             if (isDelim)
             {
-                this.DataObject = new DxfSimpleObject(this.delimValue);
+                this.DataObject = new DxfSimpleObject();
+                this.DataObject.Type = this.delimValue;
                 return true;
             }
             else
@@ -43,7 +44,7 @@ namespace ConsoleDxfReader.parsers
         public override void AddEntry(DxfEntry entry)
         {
 
-            string valueName = bodyConfig["body"][entry.code];
+            string valueName = bodyConfig[entry.code];
             if (valueName != null)
             {
                 //this is a value entry - read the property directly

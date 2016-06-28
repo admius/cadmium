@@ -46,7 +46,7 @@ namespace ConsoleDxfReader.parsers
         }
 
 
-        private DxfParser InstantiateParser<T>(dynamic config) where T : DxfObject
+        private DxfParser InstantiateParser(dynamic config)
         {
             string parserClass = config["parserClass"];
 

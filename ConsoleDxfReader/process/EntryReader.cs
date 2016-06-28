@@ -20,7 +20,7 @@ namespace ConsoleDxfReader.process
 
         public DxfEntry readEntry()
         {
-            if (currentLine < lines.Count - 2)
+            if (currentLine <= lines.Count - 2)
             {
                 DxfEntry entry = new DxfEntry();
                 entry.code = readString().Trim();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,10 +9,11 @@ namespace ConsoleDxfReader.process
 {
     class DxfListObject : DxfObject
     {
-        private List<DxfObject> entries;
+        private List<DxfObject> entries = new List<DxfObject>();
 
-        public DxfListObject(string type) : base(type)
+        public DxfListObject() : base()
         {
+            Type = "List";
         }
 
         public List<DxfObject> Entries
@@ -24,11 +26,12 @@ namespace ConsoleDxfReader.process
             entries.Add(entry);
         }
 
-        public void DebugPrint(int indentCount)
+        public override void DebugPrint(StreamWriter stream, int indentCount)
         {
+            base.DebugPrint(stream, indentCount);
             foreach(DxfObject data in entries)
             {
-                data.debugPrint(indentCount);
+                data.DebugPrint(stream, indentCount + 1);
             }
         }
     }
