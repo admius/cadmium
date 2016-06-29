@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleDxfReader.process;
+using DxfLib.Data;
 
-namespace ConsoleDxfReader.parsers
+namespace DxfLib.Parser
 {
-    class ParserFactory
+    public class ParserFactory
     {
         private dynamic parseConfig;
 

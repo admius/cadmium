@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleDxfReader.process;
+using DxfLib.Data;
 
-namespace ConsoleDxfReader.parsers
+namespace DxfLib.Parser
 {
     /// <summary>
     /// This class handles a single segment with a fixed delimiter code and value 
     /// and a list of simple properties.
     /// </summary>
-    class FixedSegment : DxfParser
+    public class FixedSegment : DxfParser
     {
         private string delimCode;
         private string delimValue;
@@ -31,8 +31,8 @@ namespace ConsoleDxfReader.parsers
 
             if (isDelim)
             {
-                this.DataObject = new DxfSimpleObject();
-                this.DataObject.Type = this.delimValue;
+                this.DataObject = new DxfObject();
+                this.DataObject.Key = this.delimValue;
                 return true;
             }
             else
@@ -59,7 +59,7 @@ namespace ConsoleDxfReader.parsers
 
         protected void AddProperty(string key, string value)
         {
-            ((DxfSimpleObject)DataObject).AddProperty(new DxfProperty(key, value));
+            DataObject.AddEntry(new DxfProperty(key, value));
         }
 
         /// <summary>

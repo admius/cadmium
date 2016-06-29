@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{055D3ECA-0694-42E5-897E-6B8592C878AB}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{2739A152-CB68-4DBB-8D2E-BD8EFF987EBF}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConsoleDxfReader</RootNamespace>
-    <AssemblyName>ConsoleDxfReader</AssemblyName>
+    <RootNamespace>DxfLib</RootNamespace>
+    <AssemblyName>DxfLib</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,16 +22,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>ConsoleDxfReader.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,20 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="DxfLib.cs" />
+    <Compile Include="IO\DynamicJsonConverter.cs" />
+    <Compile Include="IO\JsonLoader.cs" />
+    <Compile Include="IO\LineReader.cs" />
+    <Compile Include="Parser\DelimitedSegmentSet.cs" />
+    <Compile Include="Parser\DxfParser.cs" />
+    <Compile Include="Parser\FixedSegment.cs" />
+    <Compile Include="Parser\ParserFactory.cs" />
+    <Compile Include="Parser\SegmentList.cs" />
+    <Compile Include="Parser\VariableSegment.cs" />
+    <Compile Include="Data\DxfEntry.cs" />
+    <Compile Include="Data\DxfObject.cs" />
+    <Compile Include="Data\DxfProperty.cs" />
+    <Compile Include="Data\EntryReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="data\dxfDescription4.json" />
-    <None Include="data\short.dxf" />
-    <None Include="data\demo.dxf" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DxfLib\DxfLib.csproj">
-      <Project>{2739a152-cb68-4dbb-8d2e-bd8eff987ebf}</Project>
-      <Name>DxfLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

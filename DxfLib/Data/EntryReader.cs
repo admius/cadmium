@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleDxfReader.process
+namespace DxfLib.Data
 {
-    class EntryReader
+    public class EntryReader
     {
         private List<string> lines;
         private int currentLine = 0;
@@ -18,13 +18,13 @@ namespace ConsoleDxfReader.process
             this.lines = lines;
         }
 
-        public DxfEntry readEntry()
+        public DxfEntry ReadEntry()
         {
             if (currentLine <= lines.Count - 2)
             {
                 DxfEntry entry = new DxfEntry();
-                entry.code = readString().Trim();
-                entry.value = readString().Trim();
+                entry.code = ReadString().Trim();
+                entry.value = ReadString().Trim();
                 return entry;
             }
             else
@@ -42,12 +42,12 @@ namespace ConsoleDxfReader.process
         /// </summary>
         /// <param name="expectedValue"></param>
         /// <returns></returns>
-        public string readString(string expectedValue = null)
+        public string ReadString(string expectedValue = null)
         {
             string line = lines[currentLine++];
             if((expectedValue != null)&&(!line.Equals(expectedValue, StringComparison.InvariantCultureIgnoreCase)))
             {
-                throwUnexpectedLine(expectedValue, line);
+                ThrowUnexpectedLine(expectedValue, line);
             }
             return line;
         }
@@ -58,13 +58,13 @@ namespace ConsoleDxfReader.process
         /// </summary>
         /// <param name="requiredValue"></param>
         /// <returns></returns>
-        public int readInt(int? requiredValue = null)
+        public int ReadInt(int? requiredValue = null)
         {
-            string line = readString().Trim();
+            string line = ReadString().Trim();
             int value = Int32.Parse(line);
             if ((requiredValue != null)&&(value != requiredValue))
             {
-                throwUnexpectedLine(requiredValue, value);
+                ThrowUnexpectedLine(requiredValue, value);
             }
             return value;
         }
@@ -75,7 +75,7 @@ namespace ConsoleDxfReader.process
         /// <typeparam name="T"></typeparam>
         /// <param name="parseDelegate"></param>
         /// <returns></returns>
-        public T readType<T>(ParseDelegate<T> parseDelegate)
+        public T ReadType<T>(ParseDelegate<T> parseDelegate)
         {
             return parseDelegate(this);
         }
@@ -83,14 +83,14 @@ namespace ConsoleDxfReader.process
         /// <summary>
         /// This method should be called when a line should be "unread", for example when we want to read it again.
         /// </summary>
-        public void pushBack()
+        public void PushBack()
         {
             this.currentLine -= 1;
         }
 
 
 
-        private void throwUnexpectedLine(object expected, object read)
+        private void ThrowUnexpectedLine(object expected, object read)
         {
             throw new Exception("Unexpected line value: expecting " + expected.ToString() + ", read " + read.ToString());
         }

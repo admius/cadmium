@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleDxfReader.process;
+using DxfLib.Data;
 
-namespace ConsoleDxfReader.parsers
+namespace DxfLib.Parser
 {
     /// <summary>
     /// This class parses a list of segments which have a single delimiter code and
     /// a variable delimiter value. For each of these it creates a names object which includes
     /// a property for each entry in the segment.
     /// </summary>
-    class SegmentList : DxfParser
+    public class SegmentList : DxfParser
     {
         private List<DxfParser> parsers = new List<DxfParser>();
         private DxfParser activeParser = null;
-        private String typeName;
+        private String displayName;
 
         public SegmentList(dynamic config, ParserFactory parserFactory)
         {
@@ -27,13 +27,13 @@ namespace ConsoleDxfReader.parsers
                 parsers.Add(parser);
             }
 
-            if (config["typeName"] != null)
+            if (config["displayName"] != null)
             {
-                typeName = config["typeName"];
+                displayName = config["displayName"];
             }
             else
             {
-                typeName = "List";
+                displayName = "List";
             }
         }
 
@@ -49,10 +49,10 @@ namespace ConsoleDxfReader.parsers
             if (isDelim)
             {
                 //create list data object
-                DataObject = new DxfListObject();
-                DataObject.Type = this.typeName;
+                DataObject = new DxfObject();
+                DataObject.Key = this.displayName;
                 //add latest entry to list
-                ((DxfListObject)DataObject).AddEntry(activeParser.DataObject);
+                DataObject.AddEntry(activeParser.DataObject);
                 return true;
             }
             else
@@ -74,7 +74,7 @@ namespace ConsoleDxfReader.parsers
             if (isDelim)
             {
                 //add latest entry to list
-                ((DxfListObject)DataObject).AddEntry(activeParser.DataObject);
+                DataObject.AddEntry(activeParser.DataObject);
                 return true;
             }
             else

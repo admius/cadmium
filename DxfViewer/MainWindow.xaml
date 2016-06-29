@@ -1,0 +1,23 @@
+﻿<Window x:Class="DxfViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfCanvas"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525" KeyDown="Window_KeyDown">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Click="menuFile_New"/>
+                <MenuItem Header="_Open" Click="menuFile_Open"/>
+                <MenuItem Header="_Close" Click="menuFile_Close"/>
+                <Separator />
+                <MenuItem Header="_Exit"  Click="menuFile_Exit"/>
+            </MenuItem>
+        </Menu>
+        <Canvas Name="panel" Background="Cyan" ClipToBounds="True" MouseWheel="panel_MouseWheel" MouseDown="panel_MouseDown" MouseMove="panel_MouseMove" MouseUp="panel_MouseUp" MouseLeave="panel_MouseLeave">
+            <Canvas Name="displayCanvas" Background="Yellow"/>
+        </Canvas>
+    </DockPanel>
+</Window>

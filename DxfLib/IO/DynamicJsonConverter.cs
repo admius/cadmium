@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Web.Script.Serialization;
 
-namespace ConsoleDxfReader.Io
+namespace DxfLib.IO
 {
 
     public sealed class DynamicJsonConverter : JavaScriptConverter

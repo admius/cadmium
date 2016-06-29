@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleDxfReader.process;
+using DxfLib.Data;
 
-namespace ConsoleDxfReader.parsers
+namespace DxfLib.Parser
 {
     /// <summary>
     /// This class parses a list of segments which have a single delimiter code and
     /// a variable delimiter value. For each of these it creates a names object which includes
     /// a property for each entry in the segment.
     /// </summary>
-    class VariableSegment : DxfParser
+    public class VariableSegment : DxfParser
     {
         private string delimCode;
 
@@ -26,8 +26,8 @@ namespace ConsoleDxfReader.parsers
             if(entry.code.Equals(delimCode))
             {
                 //instantiate object with proper name
-                DataObject = new DxfSimpleObject();
-                DataObject.Type = entry.value;
+                DataObject = new DxfObject();
+                DataObject.Key = entry.value;
                 return true;
             }
             else
@@ -40,7 +40,7 @@ namespace ConsoleDxfReader.parsers
         public override void AddEntry(DxfEntry entry)
         {
             //this is a value entry
-            ((DxfSimpleObject)DataObject).AddProperty(new DxfProperty(entry.code, entry.value));
+            DataObject.AddEntry(new DxfProperty(entry.code, entry.value));
         }
 
     }

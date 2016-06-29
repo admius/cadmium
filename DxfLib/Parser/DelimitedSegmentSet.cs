@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleDxfReader.process;
+using DxfLib.Data;
 
-namespace ConsoleDxfReader.parsers
+namespace DxfLib.Parser
 {
-    class DelimitedSegmentSet : DxfParser
+    public class DelimitedSegmentSet : DxfParser
     {
         private enum ParseState
         {
@@ -50,8 +50,8 @@ namespace ConsoleDxfReader.parsers
                 bodyParser = null;
 
                 //prepare to read header body
-                DataObject = new DxfDelimitedObject();
-                ((DxfDelimitedObject)DataObject).Header = headerParser.DataObject;
+                DataObject = new DxfObject();
+                DataObject.AddEntry(headerParser.DataObject);
                 return true;
             }
             else
@@ -70,13 +70,13 @@ namespace ConsoleDxfReader.parsers
                     {
                         //start footer, no body
                         parseState = ParseState.FOOTER;
-                        ((DxfDelimitedObject)DataObject).Footer = footerParser.DataObject;
+                        DataObject.AddEntry(footerParser.DataObject);
                     }
                     else if ((bodyParser != null)&&(bodyParser.IsDelimiter(entry)))
                     {
                         //body starting
                         parseState = ParseState.BODY;
-                        ((DxfDelimitedObject)DataObject).Body = bodyParser.DataObject;
+                        DataObject.AddEntry(bodyParser.DataObject);
                     }
                     else
                     {
@@ -94,7 +94,7 @@ namespace ConsoleDxfReader.parsers
                     if(footerParser.IsDelimiter(entry))
                     {
                         parseState = ParseState.FOOTER;
-                        ((DxfDelimitedObject)DataObject).Footer = footerParser.DataObject;
+                        DataObject.AddEntry(footerParser.DataObject);
                     }
                     else
                     {
@@ -114,25 +114,32 @@ namespace ConsoleDxfReader.parsers
         /// </summary>
         private void TryToLoadBodyParser()
         {
-            if(bodyParserInfo["headerField"] != null)
-            {
-                //this will only work once the field is loaded. We have to keep trying until it is. 
-                string headerField = bodyParserInfo["headerField"];
-                DxfSimpleObject headerObject = (DxfSimpleObject)(((DxfDelimitedObject)(this.DataObject)).Header);
-                if (headerObject != null)
-                {
-                    DxfProperty property = headerObject.GetProperty(headerField);
-                    string prefix = bodyParserInfo["parserNamePrefix"] != null ? bodyParserInfo["parserNamePrefix"] : "";
-                    string parserName = prefix + property.value;
+            string parserName;
 
-                    bodyParser = parserFactory.GetParser(parserName);
-                }   
+            //this will only work once the field is loaded. We have to keep trying until it is. 
+            string headerField = bodyParserInfo["headerField"];
+            if (headerField != null)
+            {
+                DxfObject headerObject = this.DataObject.DataList[0];
+                if (headerObject == null)
+                {
+                    throw new Exception("header object not found!");
+                }
+
+                DxfProperty property = headerObject.GetValue(headerField);
+                string prefix = bodyParserInfo["parserNamePrefix"];
+                parserName = prefix + property.Value;
             }
             else
             {
-                bodyParser = parserFactory.GetParser(bodyParserInfo);
+                parserName = bodyParserInfo["parserName"];
             }
 
+            //load the body parser
+            bodyParser = parserFactory.GetParser(parserName);
+
+            //apply this name as the object display name
+            this.DataObject.Key = parserName;
         }
     }
 

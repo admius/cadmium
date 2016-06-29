@@ -2,7 +2,7 @@
   "parsers": {
     "DOC": {
       "parserClass": "SegmentList",
-      "typeName": "Document",
+      "displayName": "Document",
       "parsers": [
         {
           "parserClass": "FixedSegment",
@@ -36,7 +36,7 @@
     },
     "Section:HEADER": {
       "parserClass": "SegmentList",
-      "typeName": "Header",
+      "displayName": "Header Body",
       "parsers": [
         {
           "parserClass": "VariableSegment",
@@ -46,7 +46,7 @@
     },
     "Section:CLASSES": {
       "parserClass": "SegmentList",
-      "typeName": "Classes",
+      "displayName": "Classes Body",
       "parsers": [
         {
           "parserClass": "FixedSegment",
@@ -61,7 +61,7 @@
     },
     "Section:TABLES": {
       "parserClass": "SegmentList",
-      "typeName": "Tables",
+      "displayName": "Tables Body",
       "parsers": [
         {
           "parserClass": "DelimitedSegmentSet",
@@ -91,7 +91,7 @@
     },
     "Section:BLOCKS": {
       "parserClass": "SegmentList",
-      "typeName": "Blocks",
+      "displayName": "Blocks Body",
       "parsers": [
         {
           "parserClass": "DelimitedSegmentSet",
@@ -116,7 +116,7 @@
     },
     "Section:ENTITIES": {
       "parserClass": "SegmentList",
-      "typeName": "Entities",
+      "displayName": "Entities Body",
       "parsers": [
         {
           "parserName": "Entity:3DFACE"
@@ -224,7 +224,7 @@
     },
     "Section:OBJECTS": {
       "parserClass": "SegmentList",
-      "typeName": "Objects",
+      "displayName": "Objects Body",
       "parsers": [
         {
           "parserClass": "FixedSegment",

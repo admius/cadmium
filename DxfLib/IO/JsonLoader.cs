@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.IO;
 
-namespace ConsoleDxfReader.Io
+namespace DxfLib.IO
 {
-    class JsonLoader
+    public class JsonLoader
     {
         /// <summary>
         /// This opens a meta file
         /// </summary>
         /// <param name="fileName"></param>
-        public static dynamic open(string fileName)
+        public static dynamic Open(string fileName)
         {
             //load the file
             string data = File.ReadAllText(fileName);

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleDxfReader.Io
+namespace DxfLib.IO
 {
-    class LineReader
+    public class LineReader
     {
         public static List<string> ReadFile(string fileName)
         {

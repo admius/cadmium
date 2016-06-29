@@ -5,21 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleDxfReader.process
+namespace DxfLib.Data
 {
-    class DxfObject
+    public class DxfProperty
     {
-        private string type = "<unspecified>";
-        public DxfObject()
-        {
-        }
+        public string Key;
+        public string Value;
 
-        public string Type
+        public DxfProperty(string key, string value)
         {
-            get { return type; }
-            set { type = value;  }
+            this.Key = key;
+            this.Value = value;
         }
-
 
         public virtual void DebugPrint(StreamWriter stream, int indentCount)
         {
@@ -27,7 +24,7 @@ namespace ConsoleDxfReader.process
             {
                 stream.Write("\t");
             }
-            stream.WriteLine(type);
+            stream.WriteLine(Key + ": " + Value);
         }
     }
 }

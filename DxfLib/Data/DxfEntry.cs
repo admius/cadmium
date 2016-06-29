@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleDxfReader.process
+namespace DxfLib.Data
 {
-    class DxfEntry
+    public class DxfEntry
     {
         public string code;
         public string value;

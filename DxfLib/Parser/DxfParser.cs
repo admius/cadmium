@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleDxfReader.process;
+using DxfLib.Data;
 
-namespace ConsoleDxfReader.parsers
+namespace DxfLib.Parser
 {
     /// <summary>
     /// This is a base class for parsing a list of DxfObjects.
     /// </summary>
-    abstract class DxfParser
+    public abstract class DxfParser
     {
         private DxfObject dataObject;
 
