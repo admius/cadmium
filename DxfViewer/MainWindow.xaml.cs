@@ -22,6 +22,8 @@ namespace DxfViewer
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static int COMMAND_LINE_DXF_CONFIG = 1;
+
         private CanvasManager canvasManager;
 
         private const double DX = 10;

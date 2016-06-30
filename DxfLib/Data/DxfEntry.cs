@@ -12,7 +12,7 @@ namespace DxfLib.Data
         public string code;
         public string value;
 
-        public void DebugPrint(StreamWriter stream, int indentCount)
+        public void DebugPrint(TextWriter stream, int indentCount)
         {
             for (int i = 0; i < indentCount; i++)
             {

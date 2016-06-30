@@ -18,7 +18,7 @@ namespace DxfLib.Data
             this.Value = value;
         }
 
-        public virtual void DebugPrint(StreamWriter stream, int indentCount)
+        public virtual void DebugPrint(TextWriter stream, int indentCount)
         {
             for (int i = 0; i < indentCount; i++)
             {

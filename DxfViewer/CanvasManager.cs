@@ -17,6 +17,9 @@ namespace DxfViewer
         private ScrollViewer scrollViewer;
         private Matrix renderMatrix;
 
+        private string dxfConfigFileName;
+        private DxfData data;
+
         public CanvasManager(Canvas canvas)
         {
             this.canvas = canvas;
@@ -26,12 +29,15 @@ namespace DxfViewer
             this.canvas.Width = 1000;
 
             UpdateCanvasTransform();
+
+            string[] args = Environment.GetCommandLineArgs();
+            dxfConfigFileName = args[MainWindow.COMMAND_LINE_DXF_CONFIG];
         }
 
         public void OpenFile(String fileName)
         {
-            DxfData data = DxfData.Open(fileName);
-            LoadData(data);
+            data = DxfData.Open(fileName,dxfConfigFileName);
+            ProcessData();
         }
 
         public void CloseFile()
@@ -64,14 +70,14 @@ namespace DxfViewer
             this.canvas.LayoutTransform = new MatrixTransform(this.renderMatrix);
         }
 
-        private void LoadData(DxfData data)
+        private void ProcessData()
         {
             //clear the canvas
             canvas.Children.Clear();
 
-            foreach (Shape geom in data.GeomList)
+            foreach (Shape shape in data.GeomList)
             {
-                canvas.Children.Add(geom);
+                canvas.Children.Add(shape);     
             }
         }
     }

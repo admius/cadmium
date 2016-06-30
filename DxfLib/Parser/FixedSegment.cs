@@ -69,7 +69,7 @@ namespace DxfLib.Parser
         protected void ProcessUnknownEntry(DxfEntry entry)
         {
             //print message
-            Console.WriteLine("Unknown entry: " + entry.code + ": " + entry.value);
+//            Console.WriteLine("Unknown entry: " + entry.code + ": " + entry.value);
             //add it to properties with the code as the key
             AddProperty(entry.code, entry.value);
         }

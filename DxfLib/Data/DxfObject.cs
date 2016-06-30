@@ -42,7 +42,7 @@ namespace DxfLib.Data
             {
                 if(entry.Key.Equals(key))
                 {
-                    return entry;
+                    return entry.Value;
                 }
             }
             return null;
@@ -54,7 +54,7 @@ namespace DxfLib.Data
         }
 
 
-        public virtual void DebugPrint(StreamWriter stream, int indentCount)
+        public virtual void DebugPrint(TextWriter stream, int indentCount)
         {
             for (int i = 0; i < indentCount; i++)
             {

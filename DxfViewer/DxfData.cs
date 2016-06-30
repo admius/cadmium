@@ -14,11 +14,12 @@ namespace DxfViewer
     public class DxfData
     {
         private DxfObject dxfObject;
-        private double viewX;
-        private double viewY;
-        private double viewWidth;
-        private double viewHeight;
-        private List<Shape> geomList;
+        private double viewX = 0;
+        private double viewY = 0;
+        private double viewWidth = 500;
+        private double viewHeight = 500;
+        private List<Shape> geomList = new List<Shape>();
+        private Dictionary<String, DxfObject> blockMap = new Dictionary<string, DxfObject>();
 
         public static DxfData Open(string dxfFile, string configFile)
         {
@@ -61,8 +62,221 @@ namespace DxfViewer
         private DxfData(DxfObject dxfObject)
         {
             this.dxfObject = dxfObject;
+
+            //save the blocks
+            DxfObject blocksSection = dxfObject.GetValue("Section:BLOCKS");
+            DxfObject blocks = blocksSection.GetValue("Blocks Body");
+            foreach(DxfObject block in blocks.DataList)
+            {
+                string blockName = GetBlockName(block);
+                blockMap.Add(blockName, block);
+            }
+
+            //convert the entities
+            DxfObject entitiesSection = dxfObject.GetValue("Section:ENTITIES");
+            DxfObject entities = entitiesSection.GetValue("Entities Body");
+
+            Transform baseTransform = Transform.Identity;
+
+            foreach(DxfObject entity in entities.DataList)
+            {
+                ProcessEntity(entity,baseTransform,geomList);
+            }
         }
 
+        #region Entity Accessors
+        private string GetBlockName(DxfObject block)
+        {
+            //get the header from the block section
+            DxfObject header = block.DataList[0];
+            //read the entry with code 2
+            return header.GetValue("2");
+        }
+
+        private List<dynamic> GetBlockEntities(DxfObject block)
+        {
+            //get the body from the block section
+            DxfObject blockBody = block.DataList[1];
+            
+
+            //@todo - add a constant for the entity name - or better yet, figure out a better way to do this.
+            if (blockBody.Key == "Entities Body")
+            {
+                return blockBody.DataList;
+            }
+            else
+            {
+                //no body
+                return null;
+            }
+        }
+
+        private string GetEntityType(DxfObject entity)
+        {
+            return entity.GetValue("0");
+        }
+        
+        private string GetInsertBlockName(DxfObject insert)
+        {
+            return insert.GetValue("2");
+        } 
+
+        private double? GetDoubleValue(DxfObject dxfobject, string code)
+        {
+            string value = dxfObject.GetValue(code);
+            if (value != null)
+            {
+                return Double.Parse(value);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Point? GetPoint(DxfObject dxfObject, string codeX, string codeY)
+        {
+            double? x = GetDoubleValue(dxfObject, codeX);
+            double? y = GetDoubleValue(dxfObject, codeY);
+            if ((x.HasValue) && (y.HasValue))
+            {
+                return new Point(x.Value,y.Value);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Transform GetInsertTransform(DxfObject insert)
+        {
+            TransformGroup t = new TransformGroup();
+
+            //optional scale
+            Point? scaleXY = GetPoint(dxfObject, "41", "42");
+            ScaleTransform st;
+            if (scaleXY.HasValue)
+            {
+                st = new ScaleTransform();
+                st.ScaleX = scaleXY.Value.X;
+                st.ScaleY = scaleXY.Value.Y;
+                t.Children.Add(st);
+            }
+
+            //optional rotate
+            double? angle = GetDoubleValue(insert,"50");
+            RotateTransform rt;
+            if(angle.HasValue)
+            {
+                rt = new RotateTransform();
+                rt.Angle = angle.Value;
+                t.Children.Add(rt);
+            }
+  
+
+            //translate required
+            Point? xy = GetPoint(dxfObject, "10", "20");
+            TranslateTransform tt = new TranslateTransform();
+            tt.X = xy.Value.X;
+            tt.Y = xy.Value.Y;
+            t.Children.Add(tt);
+
+            return t;
+        }
+
+        private Transform GetBlockBasePointTransform(DxfObject block)
+        {
+            //translate required
+            Point? xy = GetPoint(dxfObject, "10", "20");
+            if (xy.HasValue)
+            {
+                TranslateTransform tt = new TranslateTransform();
+                tt.X = xy.Value.X;
+                tt.Y = xy.Value.Y;
+                return tt;
+            }
+            else
+            {
+                return Transform.Identity;
+            }
+        }
+        #endregion
+
+        private void ProcessEntity(DxfObject entity, Transform transform, List<Shape> geomList)
+        {
+            string type = GetEntityType(entity);
+            switch(type)
+            {
+                case ("LINE"):
+                    ProcessLine(entity, transform, geomList);
+                    break;
+
+                case ("INSERT"):
+                    ProcessInsert(entity, transform, geomList);
+                    break;
+
+                //need to add other types!
+            }
+        }
+
+        private void ProcessLine(DxfObject dxfLine, Transform transform, List<Shape> geomList)
+        {
+            Point? start = GetPoint(dxfLine,"10", "20");
+            Point? end = GetPoint(dxfLine,"11", "21");
+            if(start.HasValue && end.HasValue)
+            {
+                Point startPoint = transform.Transform(start.Value);
+                Point endPoint = transform.Transform(end.Value);
+                LineGeometry line = new LineGeometry(startPoint,endPoint);
+                Path path = new Path();
+                path.Data = line;
+                path.Stroke = Brushes.Black;
+                path.StrokeThickness = 1;
+                geomList.Add(path);
+
+            }
+            else
+            {
+                Console.WriteLine("Invalid Line!");
+                return;
+            }
+        }
+
+        private void ProcessInsert(DxfObject dxfInsert, Transform transform, List<Shape> geomList)
+        {
+            string blockName = GetInsertBlockName(dxfInsert);
+            DxfObject block = blockMap[blockName];
+            if(block == null)
+            {
+                Console.WriteLine("Block not found: " + blockName);
+                return;
+            }
+
+            List<dynamic> blockEntities = GetBlockEntities(block);
+
+            if (blockEntities != null)
+            {
+                TransformGroup tg = new TransformGroup();               
+
+                //get the base transform from the block definition
+                Transform blockBaseTransform = this.GetBlockBasePointTransform(block);
+                tg.Children.Add(blockBaseTransform);
+
+                // need to add offset from entity and subtract origin from block
+                Transform insertTransform = this.GetInsertTransform(dxfInsert);
+                tg.Children.Add(insertTransform);
+
+                //add the requested input transform
+                tg.Children.Add(transform);
+
+                List<Shape> blockGeomList = new List<Shape>();
+                foreach (dynamic entity in blockEntities)
+                {
+                    ProcessEntity((DxfObject)entity, transform, blockGeomList);
+                }
+            }
+
+        }
 
         //we need to use this to configure the dxf objects into geometry
         private Shape getShape(dynamic geom)
@@ -144,4 +358,4 @@ namespace DxfViewer
         }
     }
 }
-}
+
