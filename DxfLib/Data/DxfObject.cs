@@ -74,6 +74,25 @@ namespace DxfLib.Data
         /// <param name="dxfObject"></param>
         /// <param name="code"></param>
         /// <returns></returns>
+        public int? GetIntValue(string code)
+        {
+            DxfProperty prop = GetEntry(code);
+            if (prop != null)
+            {
+                return Int32.Parse(prop.Value);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// This gets a double value for a entry that is a DxfProperty
+        /// </summary>
+        /// <param name="dxfObject"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public double? GetDoubleValue(string code)
         {
             DxfProperty prop = GetEntry(code);

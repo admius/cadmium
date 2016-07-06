@@ -21,7 +21,15 @@ namespace DxfViewer
         private List<Shape> geomList = new List<Shape>();
         private Dictionary<String, DxfObject> blockMap = new Dictionary<string, DxfObject>();
 
+        //working variables for multe element entities
+        private Path activePath = null;
+        private PathFigure activePathFigure = null;
+        private bool activePathStarted = false;
+
+        private HashSet<String> unsupportedTypes = new HashSet<string>();
+
         private static double LINE_THICKNESS = .1;
+        private static int POLYLINE_CLOSED = 1;
 
         public static DxfData Open(string dxfFile, string configFile)
         {
@@ -85,14 +93,15 @@ namespace DxfViewer
                 ProcessEntity(entity,baseTransform,geomList);
             }
 
-            Console.WriteLine("Entity Types: ");
-            foreach(string type in types)
+            //Write any unsupported types:
+            StringBuilder sb = new StringBuilder();
+            foreach(string type in unsupportedTypes)
             {
-                Console.WriteLine(type);
+                sb.Append(type);
+                sb.Append("; ");
             }
+            MessageBox.Show(sb.ToString(), "Unsupported Entity Types");
         }
-
-        private HashSet<String> types = new HashSet<string>();
 
         #region Entity Accessors
         private string GetBlockName(DxfObject block)
@@ -204,8 +213,7 @@ namespace DxfViewer
         private void ProcessEntity(DxfObject entity, Transform transform, List<Shape> geomList)
         {
             string type = entity.Key;
-
-            types.Add(type);        
+        
             switch(type)
             {
                 case ("LINE"):
@@ -232,12 +240,15 @@ namespace DxfViewer
                     ProcessCircle(entity, transform, geomList);
                     break;
 
-                case ("ARC"):
-                    ProcessArc(entity, transform, geomList);
-                    break;
+//                case ("ARC"):
+//                    ProcessArc(entity, transform, geomList);
+//                    break;
 
 
-                //need to add other types!
+                default:
+                    //record unsupported types
+                    unsupportedTypes.Add(type);
+                    break;   
             }
         }
 
@@ -304,14 +315,67 @@ namespace DxfViewer
 
         private void ProcessPolyLine(DxfObject dxfLine, Transform transform, List<Shape> geomList)
         {
+
+            bool isClosed = false;
+
+            int? flags = dxfLine.GetIntValue("70");
+            if(flags.HasValue)
+            {
+                if( (flags & POLYLINE_CLOSED) != 0)
+                {
+                    isClosed = true;
+                }
+            }
+
+            activePath = new Path();
+            PathGeometry pathGeom = new PathGeometry();
+            activePath.Data = pathGeom;
+            activePathFigure = new PathFigure();
+            pathGeom.Figures.Add(activePathFigure);
+
+            activePathFigure.IsClosed = isClosed;
+            activePathStarted = false;
         }
 
-        private void ProcessVertex(DxfObject dxfLine, Transform transform, List<Shape> geomList)
+        private void ProcessVertex(DxfObject dxfVertex, Transform transform, List<Shape> geomList)
         {
+            if(activePath == null)
+            {
+                Console.WriteLine("Vertex found with no active path!");
+                return;
+            }
+
+            Point? point = GetPoint(dxfVertex, "10", "20");
+            if (point.HasValue)
+            {
+                Point transformedPoint = transform.Transform(point.Value);
+                if (activePathStarted) 
+                {
+                    LineSegment lineSegment = new LineSegment();
+                    lineSegment.Point = transformedPoint;
+                    activePathFigure.Segments.Add(lineSegment);
+                }
+                else
+                {
+                    activePathFigure.StartPoint = transformedPoint;
+                    activePathStarted = true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Missing point in vertex!");
+            }
         }
 
         private void ProcessSeqEnd(DxfObject dxfLine, Transform transform, List<Shape> geomList)
         {
+            activePath.Stroke = Brushes.Black;
+            activePath.StrokeThickness = LINE_THICKNESS;
+            geomList.Add(activePath);
+
+            activePath = null;
+            activePathFigure = null;
+            activePathStarted = false;
         }
 
         private void ProcessCircle(DxfObject dxfCircle, Transform transform, List<Shape> geomList)
