@@ -21,6 +21,8 @@ namespace DxfViewer
         private List<Shape> geomList = new List<Shape>();
         private Dictionary<String, DxfObject> blockMap = new Dictionary<string, DxfObject>();
 
+        private static double LINE_THICKNESS = .1;
+
         public static DxfData Open(string dxfFile, string configFile)
         {
             DxfReader dxfReader = new DxfReader();
@@ -64,8 +66,8 @@ namespace DxfViewer
             this.dxfObject = dxfObject;
 
             //save the blocks
-            DxfObject blocksSection = dxfObject.GetValue("Section:BLOCKS");
-            DxfObject blocks = blocksSection.GetValue("Blocks Body");
+            DxfObject blocksSection = dxfObject.GetEntry("Section:BLOCKS");
+            DxfObject blocks = blocksSection.GetEntry("Blocks Body");
             foreach(DxfObject block in blocks.DataList)
             {
                 string blockName = GetBlockName(block);
@@ -73,8 +75,8 @@ namespace DxfViewer
             }
 
             //convert the entities
-            DxfObject entitiesSection = dxfObject.GetValue("Section:ENTITIES");
-            DxfObject entities = entitiesSection.GetValue("Entities Body");
+            DxfObject entitiesSection = dxfObject.GetEntry("Section:ENTITIES");
+            DxfObject entities = entitiesSection.GetEntry("Entities Body");
 
             Transform baseTransform = Transform.Identity;
 
@@ -82,7 +84,15 @@ namespace DxfViewer
             {
                 ProcessEntity(entity,baseTransform,geomList);
             }
+
+            Console.WriteLine("Entity Types: ");
+            foreach(string type in types)
+            {
+                Console.WriteLine(type);
+            }
         }
+
+        private HashSet<String> types = new HashSet<string>();
 
         #region Entity Accessors
         private string GetBlockName(DxfObject block)
@@ -90,7 +100,7 @@ namespace DxfViewer
             //get the header from the block section
             DxfObject header = block.DataList[0];
             //read the entry with code 2
-            return header.GetValue("2");
+            return header.GetStringValue("2");
         }
 
         private List<dynamic> GetBlockEntities(DxfObject block)
@@ -110,34 +120,16 @@ namespace DxfViewer
                 return null;
             }
         }
-
-        private string GetEntityType(DxfObject entity)
-        {
-            return entity.GetValue("0");
-        }
         
         private string GetInsertBlockName(DxfObject insert)
         {
-            return insert.GetValue("2");
-        } 
-
-        private double? GetDoubleValue(DxfObject dxfobject, string code)
-        {
-            string value = dxfObject.GetValue(code);
-            if (value != null)
-            {
-                return Double.Parse(value);
-            }
-            else
-            {
-                return null;
-            }
+            return insert.GetStringValue("2");
         }
 
         private Point? GetPoint(DxfObject dxfObject, string codeX, string codeY)
         {
-            double? x = GetDoubleValue(dxfObject, codeX);
-            double? y = GetDoubleValue(dxfObject, codeY);
+            double? x = dxfObject.GetDoubleValue(codeX);
+            double? y = dxfObject.GetDoubleValue(codeY);
             if ((x.HasValue) && (y.HasValue))
             {
                 return new Point(x.Value,y.Value);
@@ -153,7 +145,7 @@ namespace DxfViewer
             TransformGroup t = new TransformGroup();
 
             //optional scale
-            Point? scaleXY = GetPoint(dxfObject, "41", "42");
+            Point? scaleXY = GetPoint(insert, "41", "42");
             ScaleTransform st;
             if (scaleXY.HasValue)
             {
@@ -164,7 +156,7 @@ namespace DxfViewer
             }
 
             //optional rotate
-            double? angle = GetDoubleValue(insert,"50");
+            double? angle = insert.GetDoubleValue("50");
             RotateTransform rt;
             if(angle.HasValue)
             {
@@ -175,7 +167,7 @@ namespace DxfViewer
   
 
             //translate required
-            Point? xy = GetPoint(dxfObject, "10", "20");
+            Point? xy = GetPoint(insert, "10", "20");
             TranslateTransform tt = new TranslateTransform();
             tt.X = xy.Value.X;
             tt.Y = xy.Value.Y;
@@ -186,8 +178,10 @@ namespace DxfViewer
 
         private Transform GetBlockBasePointTransform(DxfObject block)
         {
+            DxfObject blockHeader = block.DataList[0];
+
             //translate required
-            Point? xy = GetPoint(dxfObject, "10", "20");
+            Point? xy = GetPoint(blockHeader, "10", "20");
             if (xy.HasValue)
             {
                 TranslateTransform tt = new TranslateTransform();
@@ -202,9 +196,16 @@ namespace DxfViewer
         }
         #endregion
 
+        /// <summary>
+        /// we need toupdate this for different types, not just polyline!
+        /// </summary>
+        private Polyline activePolyLine = null;
+    
         private void ProcessEntity(DxfObject entity, Transform transform, List<Shape> geomList)
         {
-            string type = GetEntityType(entity);
+            string type = entity.Key;
+
+            types.Add(type);        
             switch(type)
             {
                 case ("LINE"):
@@ -214,6 +215,27 @@ namespace DxfViewer
                 case ("INSERT"):
                     ProcessInsert(entity, transform, geomList);
                     break;
+
+                case ("POLYLINE"):
+                    ProcessPolyLine(entity, transform, geomList);
+                    break;
+
+                case ("VERTEX"):
+                    ProcessVertex(entity, transform, geomList);
+                    break;
+
+                case ("SEQEND"):
+                    ProcessSeqEnd(entity, transform, geomList);
+                    break;
+
+                case ("CIRCLE"):
+                    ProcessCircle(entity, transform, geomList);
+                    break;
+
+                case ("ARC"):
+                    ProcessArc(entity, transform, geomList);
+                    break;
+
 
                 //need to add other types!
             }
@@ -231,7 +253,7 @@ namespace DxfViewer
                 Path path = new Path();
                 path.Data = line;
                 path.Stroke = Brushes.Black;
-                path.StrokeThickness = 1;
+                path.StrokeThickness = LINE_THICKNESS;
                 geomList.Add(path);
 
             }
@@ -272,11 +294,76 @@ namespace DxfViewer
                 List<Shape> blockGeomList = new List<Shape>();
                 foreach (dynamic entity in blockEntities)
                 {
-                    ProcessEntity((DxfObject)entity, transform, blockGeomList);
+                    ProcessEntity((DxfObject)entity, tg, blockGeomList);
                 }
+
+                geomList.AddRange(blockGeomList);
             }
 
         }
+
+        private void ProcessPolyLine(DxfObject dxfLine, Transform transform, List<Shape> geomList)
+        {
+        }
+
+        private void ProcessVertex(DxfObject dxfLine, Transform transform, List<Shape> geomList)
+        {
+        }
+
+        private void ProcessSeqEnd(DxfObject dxfLine, Transform transform, List<Shape> geomList)
+        {
+        }
+
+        private void ProcessCircle(DxfObject dxfCircle, Transform transform, List<Shape> geomList)
+        {
+            Point? center = GetPoint(dxfCircle, "10", "20");
+            double? radius = dxfCircle.GetDoubleValue("40");
+            if (center.HasValue && radius.HasValue)
+            {
+                EllipseGeometry circle = new EllipseGeometry(center.Value,radius.Value,radius.Value,transform);
+                Path path = new Path();
+                path.Data = circle;
+                path.Stroke = Brushes.Black;
+                path.StrokeThickness = LINE_THICKNESS;
+                geomList.Add(path);
+
+            }
+            else
+            {
+                Console.WriteLine("Invalid Line!");
+                return;
+            }
+        }
+
+        private void ProcessArc(DxfObject dxfArc, Transform transform, List<Shape> geomList)
+        {
+            /*            Point? center = GetPoint(dxfArc, "10", "20");
+                        double? radius = dxfArc.GetDoubleValue("40");
+                        double? startAngle = dxfArc.GetDoubleValue("50");
+                        double? endAngle = dxfArc.GetDoubleValue("51");
+                        if (center.HasValue && radius.HasValue && startAngle.HasValue && endAngle.HasValue)
+                        {
+                            PathFigure pathFigure = new PathFigure();
+                            pathFigure.StartPoint = center.Value; //DETERMINE THIS!!
+                            ArcSegment segment = new ArcSegment(); // GET ARGUMENTS
+                            pathFigure.Segments.Add(segment);
+                            PathGeometry pathGeometry = new PathGeometry();
+                            pathGeometry.Figures.Add(pathFigure);
+
+                            Path path = new Path();
+                            path.Data = pathGeometry;
+                            path.Stroke = Brushes.Black;
+                            path.StrokeThickness = LINE_THICKNESS;
+                            geomList.Add(path);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid Line!");
+                            return;
+                        }*/
+        }
+
+
 
         //we need to use this to configure the dxf objects into geometry
         private Shape getShape(dynamic geom)

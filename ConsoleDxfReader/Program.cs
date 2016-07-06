@@ -31,11 +31,11 @@ namespace ConsoleDxfReader
 //            }
 
             //lookups
-            DxfObject entitiesSection = docObject.GetValue("Section:ENTITIES");
-            DxfObject entities = entitiesSection.GetValue("Entities Body");
+            DxfObject entitiesSection = docObject.GetEntry("Section:ENTITIES");
+            DxfObject entities = entitiesSection.GetEntry("Entities Body");
 
-            DxfObject blocksSection = docObject.GetValue("Section:BLOCKS");
-            DxfObject blocks = blocksSection.GetValue("Blocks Body");
+            DxfObject blocksSection = docObject.GetEntry("Section:BLOCKS");
+            DxfObject blocks = blocksSection.GetEntry("Blocks Body");
         }
     }
 }

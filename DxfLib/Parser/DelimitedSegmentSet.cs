@@ -126,7 +126,7 @@ namespace DxfLib.Parser
                     throw new Exception("header object not found!");
                 }
 
-                DxfProperty property = headerObject.GetValue(headerField);
+                DxfProperty property = headerObject.GetEntry(headerField);
                 string prefix = bodyParserInfo["parserNamePrefix"];
                 parserName = prefix + property.Value;
             }

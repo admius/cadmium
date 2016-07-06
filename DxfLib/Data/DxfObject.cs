@@ -36,16 +36,55 @@ namespace DxfLib.Data
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public dynamic GetValue(string key)
+        public dynamic GetEntry(string key)
         {
             foreach(dynamic entry in dataList)
             {
                 if(entry.Key.Equals(key))
                 {
-                    return entry.Value;
+                    return entry;
                 }
             }
             return null;
+        }
+
+        //DxfProperty Accessors
+        /// <summary>
+        /// This gets a string value for a entry that is a DxfProperty
+        /// </summary>
+        /// <param name="dxfObject"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public string GetStringValue(string code)
+        {
+            DxfProperty prop = GetEntry(code);
+            if (prop != null)
+            {
+                return prop.Value;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// This gets a double value for a entry that is a DxfProperty
+        /// </summary>
+        /// <param name="dxfObject"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public double? GetDoubleValue(string code)
+        {
+            DxfProperty prop = GetEntry(code);
+            if (prop != null)
+            {
+                return Double.Parse(prop.Value);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public void AddEntry(dynamic entry)
