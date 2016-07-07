@@ -124,9 +124,7 @@ namespace DxfViewer
         {
             if (dragInProgress)
             {
-                Console.Out.WriteLine("Old: " + lastPoint.X + "," + lastPoint.Y);
                 Point currentPoint = e.GetPosition(panel);
-                Console.Out.WriteLine("New: " + currentPoint.X + "," + currentPoint.Y);
                 canvasManager.Pan(currentPoint.X - lastPoint.X, currentPoint.Y - lastPoint.Y);
                 lastPoint = currentPoint;
             }

@@ -10,7 +10,12 @@
           "delimValue": "EOF",
           "body": { }
         },
-        { "parserName": "SECTION" }
+        { "parserName": "SECTION" },
+        {
+          "parserClass": "VariableSegment",
+          "delimCode": "999",
+          "body": { }
+        }
       ]
     },
     "SECTION": {

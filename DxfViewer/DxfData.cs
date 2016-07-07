@@ -28,7 +28,7 @@ namespace DxfViewer
 
         private HashSet<String> unsupportedTypes = new HashSet<string>();
 
-        private static double LINE_THICKNESS = .1;
+        private static double LINE_THICKNESS = 1;
         private static int POLYLINE_CLOSED = 1;
 
         public static DxfData Open(string dxfFile, string configFile)
@@ -79,6 +79,7 @@ namespace DxfViewer
             foreach(DxfObject block in blocks.DataList)
             {
                 string blockName = GetBlockName(block);
+                blockName = blockName.ToUpper();
                 blockMap.Add(blockName, block);
             }
 
@@ -112,6 +113,19 @@ namespace DxfViewer
             return header.GetStringValue("2");
         }
 
+        private DxfObject GetBlock(string blockName)
+        {
+            //case insensitive?
+            blockName = blockName.ToUpper();
+
+            if (!blockMap.ContainsKey(blockName))
+            {
+                return null;
+            }
+
+            return blockMap[blockName];
+        }
+
         private List<dynamic> GetBlockEntities(DxfObject block)
         {
             //get the body from the block section
@@ -135,10 +149,10 @@ namespace DxfViewer
             return insert.GetStringValue("2");
         }
 
-        private Point? GetPoint(DxfObject dxfObject, string codeX, string codeY)
+        private Point? GetPoint(DxfObject dxfObject, string codeX, string codeY, int nth = 0)
         {
-            double? x = dxfObject.GetDoubleValue(codeX);
-            double? y = dxfObject.GetDoubleValue(codeY);
+            double? x = dxfObject.GetDoubleValue(codeX,nth);
+            double? y = dxfObject.GetDoubleValue(codeY,nth);
             if ((x.HasValue) && (y.HasValue))
             {
                 return new Point(x.Value,y.Value);
@@ -205,10 +219,6 @@ namespace DxfViewer
         }
         #endregion
 
-        /// <summary>
-        /// we need toupdate this for different types, not just polyline!
-        /// </summary>
-        private Polyline activePolyLine = null;
     
         private void ProcessEntity(DxfObject entity, Transform transform, List<Shape> geomList)
         {
@@ -226,6 +236,10 @@ namespace DxfViewer
 
                 case ("POLYLINE"):
                     ProcessPolyLine(entity, transform, geomList);
+                    break;
+
+                case ("LWPOLYLINE"):
+                    ProcessLWPolyLine(entity, transform, geomList);
                     break;
 
                 case ("VERTEX"):
@@ -278,8 +292,8 @@ namespace DxfViewer
         private void ProcessInsert(DxfObject dxfInsert, Transform transform, List<Shape> geomList)
         {
             string blockName = GetInsertBlockName(dxfInsert);
-            DxfObject block = blockMap[blockName];
-            if(block == null)
+            DxfObject block = GetBlock(blockName);
+            if (block == null)
             {
                 Console.WriteLine("Block not found: " + blockName);
                 return;
@@ -367,15 +381,88 @@ namespace DxfViewer
             }
         }
 
-        private void ProcessSeqEnd(DxfObject dxfLine, Transform transform, List<Shape> geomList)
+        private void ProcessSeqEnd(DxfObject dxfObject, Transform transform, List<Shape> geomList)
         {
-            activePath.Stroke = Brushes.Black;
-            activePath.StrokeThickness = LINE_THICKNESS;
-            geomList.Add(activePath);
+            if (activePath != null)
+            {
+                activePath.Stroke = Brushes.Black;
+                activePath.StrokeThickness = LINE_THICKNESS;
+                geomList.Add(activePath);
 
-            activePath = null;
-            activePathFigure = null;
-            activePathStarted = false;
+                activePath = null;
+                activePathFigure = null;
+                activePathStarted = false;
+            }
+            else
+            {
+                Console.WriteLine("ENDSEQ found while not in a known sequence.");
+            }
+        }
+
+        private void ProcessLWPolyLine(DxfObject dxfLWPolyLine, Transform transform, List<Shape> geomList)
+        {
+
+            bool isClosed = false;
+
+            //read flags
+            int? flags = dxfLWPolyLine.GetIntValue("70");
+            if (flags.HasValue)
+            {
+                if ((flags & POLYLINE_CLOSED) != 0)
+                {
+                    isClosed = true;
+                }
+            }
+
+            //read vertices count
+            int? numVertices = dxfLWPolyLine.GetIntValue("90");
+            if(!numVertices.HasValue)
+            {
+                Console.WriteLine("Missing numer of vertices in lwpolyline!");
+                return;
+            }
+
+            //create path
+            Path path = new Path();
+            PathGeometry pathGeom = new PathGeometry();
+            path.Data = pathGeom;
+            PathFigure pathFigure = new PathFigure();
+            pathGeom.Figures.Add(pathFigure);
+
+            pathFigure.IsClosed = isClosed;
+            bool pathStarted = false;
+
+
+            //read the points
+            for (int nth = 0; nth < numVertices; nth++)
+            {
+                Point? point = GetPoint(dxfLWPolyLine, "10", "20", nth);
+                if (point.HasValue)
+                {
+                    Point transformedPoint = transform.Transform(point.Value);
+                    if (pathStarted)
+                    {
+                        LineSegment lineSegment = new LineSegment();
+                        lineSegment.Point = transformedPoint;
+                        pathFigure.Segments.Add(lineSegment);
+                    }
+                    else
+                    {
+                        pathFigure.StartPoint = transformedPoint;
+                        pathStarted = true;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("missing vertices in LWPolyline!");
+                    break;
+                }
+            }
+
+            path.Stroke = Brushes.Black;
+            path.StrokeThickness = LINE_THICKNESS;
+            geomList.Add(path);
+
         }
 
         private void ProcessCircle(DxfObject dxfCircle, Transform transform, List<Shape> geomList)

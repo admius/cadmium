@@ -14,7 +14,6 @@ namespace DxfViewer
     class CanvasManager
     {
         private Canvas canvas;
-        private ScrollViewer scrollViewer;
         private Matrix renderMatrix;
 
         private string dxfConfigFileName;
@@ -47,10 +46,23 @@ namespace DxfViewer
 
         public void Zoom(double zoomFactor, Point canvasPoint)
         {
-            this.renderMatrix.Translate(-canvasPoint.X, -canvasPoint.Y);
+
+            Point initialOut = this.renderMatrix.Transform(canvasPoint);
+
             this.renderMatrix.Scale(zoomFactor, zoomFactor);
-            this.renderMatrix.Translate(canvasPoint.X, canvasPoint.Y);
+
+            Point finalOut = this.renderMatrix.Transform(canvasPoint);
+            Vector diff = Point.Subtract(finalOut,initialOut);
+            this.renderMatrix.Translate(-diff.X,-diff.Y);
+
+            //Point finalOut2 = this.renderMatrix.Transform(canvasPoint);
+
             UpdateCanvasTransform();
+        }
+
+        private void PrintMatrix(Matrix matrix)
+        {
+            Console.WriteLine("Matrix: " + matrix.M11 + ", " + matrix.M12 + "; " + matrix.M21 + ", " + matrix.M22 + "; Offset: " + matrix.OffsetX + ", " + matrix.OffsetY);
         }
 
         public void Pan(double dx, double dy)
@@ -67,7 +79,6 @@ namespace DxfViewer
         private void UpdateCanvasTransform()
         {
             this.canvas.RenderTransform = new MatrixTransform(this.renderMatrix);
-            this.canvas.LayoutTransform = new MatrixTransform(this.renderMatrix);
         }
 
         private void ProcessData()
