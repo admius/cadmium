@@ -51,6 +51,7 @@ namespace DxfLib.Parser
 
                 //prepare to read header body
                 DataObject = new DxfObject();
+                DataObject.Key = entry.value;
                 DataObject.AddEntry(headerParser.DataObject);
                 return true;
             }
@@ -137,9 +138,6 @@ namespace DxfLib.Parser
 
             //load the body parser
             bodyParser = parserFactory.GetParser(parserName);
-
-            //apply this name as the object display name
-            this.DataObject.Key = parserName;
         }
     }
 

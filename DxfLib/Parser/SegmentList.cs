@@ -16,7 +16,6 @@ namespace DxfLib.Parser
     {
         private List<DxfParser> parsers = new List<DxfParser>();
         private DxfParser activeParser = null;
-        private String displayName;
 
         public SegmentList(dynamic config, ParserFactory parserFactory)
         {
@@ -25,15 +24,6 @@ namespace DxfLib.Parser
             {
                 DxfParser parser = parserFactory.GetParser(childConfig);
                 parsers.Add(parser);
-            }
-
-            if (config["displayName"] != null)
-            {
-                displayName = config["displayName"];
-            }
-            else
-            {
-                displayName = "List";
             }
         }
 
@@ -50,7 +40,7 @@ namespace DxfLib.Parser
             {
                 //create list data object
                 DataObject = new DxfObject();
-                DataObject.Key = this.displayName;
+                DataObject.Key = "list";
                 //add latest entry to list
                 DataObject.AddEntry(activeParser.DataObject);
                 return true;

@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 using System.Windows.Shapes;
 using DxfLib;
 using DxfLib.Data;
+using DxfLib.Query;
 using System.Windows;
 using System.Windows.Media;
 
 namespace DxfViewer
 {
+
     public class DxfData
     {
+        #region properties
         private DxfObject dxfObject;
         private double viewX = 0;
         private double viewY = 0;
@@ -31,6 +34,9 @@ namespace DxfViewer
         private static double LINE_THICKNESS = 1;
         private static int POLYLINE_CLOSED = 1;
 
+        #endregion
+
+        #region Public Methods
         public static DxfData Open(string dxfFile, string configFile)
         {
             DxfReader dxfReader = new DxfReader();
@@ -64,15 +70,51 @@ namespace DxfViewer
         {
             get { return viewHeight; }
         }
+        #endregion
 
         //=================================
         // Private Methods
         //=================================
 
+        #region Constructor
         private DxfData(DxfObject dxfObject)
         {
             this.dxfObject = dxfObject;
 
+            //dxfObject.DebugPrint(Console.Out, 0);
+
+
+
+
+
+            //read the layers
+            //HasPropertyFilter(string code, string value)
+            //HasObjectFilter(QueryFilter filter)
+            //DxfObjectSource(DxfObject parent)
+            //SearchSource(SearchSource source, QueryFilter filter)
+            GetList docList = QSource.Dxf(dxfObject);
+            GetList sectionList = QSource.Search(docList, QFilter.HasKey("SECTION"));
+            GetList tablesSectionList = QSource.Search(sectionList, QFilter.HasObject(QFilter.And(QFilter.HasKey("SECTION"), QFilter.HasProperty("sectionType", "TABLES"))));
+            
+
+            List<dynamic> sections = tablesSectionList();
+            
+/*
+            DxfObject tablesSection = dxfObject.GetEntry("Section:TABLES");
+            DxfObject tables = tablesSection.GetEntry("Tables Body");
+            foreach(DxfObject table in tables.DataList)
+            {
+                string tableType = GetTableType(table);
+                if(tableType.Equals("LAYER"))
+                {
+                    
+                }
+            }
+            DxfObject layerTable = null;
+
+*/
+
+/*
             //save the blocks
             DxfObject blocksSection = dxfObject.GetEntry("Section:BLOCKS");
             DxfObject blocks = blocksSection.GetEntry("Blocks Body");
@@ -102,9 +144,11 @@ namespace DxfViewer
                 sb.Append("; ");
             }
             MessageBox.Show(sb.ToString(), "Unsupported Entity Types");
+*/
         }
+        #endregion
 
-        #region Entity Accessors
+        #region DxfObject Accessors
         private string GetBlockName(DxfObject block)
         {
             //get the header from the block section
@@ -219,7 +263,7 @@ namespace DxfViewer
         }
         #endregion
 
-    
+        #region Entity Processing
         private void ProcessEntity(DxfObject entity, Transform transform, List<Shape> geomList)
         {
             string type = entity.Key;
@@ -513,9 +557,10 @@ namespace DxfViewer
                             return;
                         }*/
         }
+        #endregion
 
-
-
+        #region extra stuff
+        /*
         //we need to use this to configure the dxf objects into geometry
         private Shape getShape(dynamic geom)
         {
@@ -593,7 +638,10 @@ namespace DxfViewer
 
             return path;
 
-        }
+        } */
+        #endregion
     }
+
+
 }
 
