@@ -48,7 +48,7 @@ namespace DxfLib.Parser
             if (valueName != null)
             {
                 //this is a value entry - read the property directly
-                AddProperty(valueName, entry.value);
+                AddProperty(entry.code, entry.value);
             }
             else
             {

@@ -21,7 +21,7 @@
       "parserClass": "DelimitedSegmentSet",
       "bodyParser": {
         "parserNamePrefix": "Section:",
-        "headerField": "sectionType"
+        "headerField": "2"
       },
       "header": {
         "delimCode": "0",
@@ -68,7 +68,7 @@
           "parserClass": "DelimitedSegmentSet",
           "bodyParser": {
             "parserNamePrefix": "Table:",
-            "headerField": "tableType"
+            "headerField": "2"
           },
           "header": {
             "delimCode": "0",
@@ -284,69 +284,113 @@
       ]
     },
 
-
     "Table:APPID": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "APPID",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "APPID",
+          "body": {
+          }
+        }
+      ]
     },
     "Table:BLOCK_RECORD": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "BLOCK_RECORD",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "BLOCK_RECORD",
+          "body": {
+          }
+        }
+      ]
     },
     "Table:DIMSTYLE": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "DIMSTYLE",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "DIMSTYLE",
+          "body": {
+          }
+        }
+      ]
     },
     "Table:LAYER": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "LAYER",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "LAYER",
+          "body": {
+          }
+        }
+      ]
     },
     "Table:LTYPE": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "LTYPE",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "LTYPE",
+          "body": {
+          }
+        }
+      ]
     },
     "Table:STYLE": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "STYLE",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "STYLE",
+          "body": {
+          }
+        }
+      ]
     },
     "Table:UCS": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "UCS",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "UCS",
+          "body": {
+          }
+        }
+      ]
     },
     "Table:VIEW": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "VIEW",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "VIEW",
+          "body": {
+          }
+        }
+      ]
     },
     "Table:VPORT": {
-      "parserClass": "FixedSegment",
-      "delimCode": "0",
-      "delimValue": "VPORT",
-      "body": {
-      }
+      "parserClass": "SegmentList",
+      "parsers": [
+        {
+          "parserClass": "FixedSegment",
+          "delimCode": "0",
+          "delimValue": "VPORT",
+          "body": {
+          }
+        }
+      ]
     },
 
 

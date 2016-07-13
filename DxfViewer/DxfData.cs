@@ -16,11 +16,10 @@ namespace DxfViewer
     public class DxfData
     {
         #region properties
-        private DxfObject dxfObject;
-        private double viewX = 0;
-        private double viewY = 0;
-        private double viewWidth = 500;
-        private double viewHeight = 500;
+        private DxfObject docObject;
+        private Point viewMin;
+        private Point viewMax;
+        private List<String> layers = new List<String>();
         private List<Shape> geomList = new List<Shape>();
         private Dictionary<String, DxfObject> blockMap = new Dictionary<string, DxfObject>();
 
@@ -53,22 +52,27 @@ namespace DxfViewer
         }
 
         public double ViewX {
-            get { return viewX;}
+            get { return viewMin.X;}
         }
 
         public double ViewY
         {
-            get { return viewY; }
+            get { return viewMin.Y; }
         }
 
         public double ViewWidth
         {
-            get { return viewWidth; }
+            get { return viewMax.X - viewMin.X; }
         }
 
         public double ViewHeight
         {
-            get { return viewHeight; }
+            get { return viewMax.Y - viewMin.Y; }
+        }
+
+        public List<String> Layers
+        {
+            get { return layers; }
         }
         #endregion
 
@@ -77,48 +81,57 @@ namespace DxfViewer
         //=================================
 
         #region Constructor
-        private DxfData(DxfObject dxfObject)
+        private DxfData(DxfObject docObject)
         {
-            this.dxfObject = dxfObject;
-
-            //dxfObject.DebugPrint(Console.Out, 0);
-
-
-
-
+            this.docObject = docObject;
 
             //read the layers
-            //HasPropertyFilter(string code, string value)
-            //HasObjectFilter(QueryFilter filter)
-            //DxfObjectSource(DxfObject parent)
-            //SearchSource(SearchSource source, QueryFilter filter)
-            GetList docList = QSource.Dxf(dxfObject);
-            GetList sectionList = QSource.Search(docList, QFilter.HasKey("SECTION"));
-            GetList tablesSectionList = QSource.Search(sectionList, QFilter.HasObject(QFilter.And(QFilter.HasKey("SECTION"), QFilter.HasProperty("sectionType", "TABLES"))));
-            
+            List<dynamic> sectionList = GetList.FromDxf(this.docObject, Has.Key("SECTION"));
 
-            List<dynamic> sections = tablesSectionList();
-            
-/*
-            DxfObject tablesSection = dxfObject.GetEntry("Section:TABLES");
-            DxfObject tables = tablesSection.GetEntry("Tables Body");
-            foreach(DxfObject table in tables.DataList)
+            DxfObject headerSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Key("SECTION"), Has.Property("2", "HEADER"))));
+            DxfObject tablesSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Key("SECTION"), Has.Property("2", "TABLES"))));
+            DxfObject blocksSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Key("SECTION"), Has.Property("2", "BLOCKS"))));
+            DxfObject entitiesSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Key("SECTION"), Has.Property("2", "ENTITIES"))));
+
+            //read the dimensions
+            DxfObject headBody = GetObject.FromDxf(headerSection, Has.Key("list"));
+            DxfObject extentsMin = GetObject.FromDxf(headBody, Has.Key("$EXTMIN"));
+            if (extentsMin != null)
             {
-                string tableType = GetTableType(table);
-                if(tableType.Equals("LAYER"))
+                extentsMin.DebugPrint(Console.Out, 0);
+                Point? nullableViewMin = this.GetPoint(extentsMin, "10", "20");
+                if (nullableViewMin.HasValue)
                 {
-                    
+                    viewMin = nullableViewMin.Value;
                 }
             }
-            DxfObject layerTable = null;
 
-*/
+            DxfObject extentsMax = GetObject.FromDxf(headBody, Has.Key("$EXTMAX"));
+            if (extentsMax != null)
+            {
+                extentsMax.DebugPrint(Console.Out, 0);
+                Point? nullableViewMax = this.GetPoint(extentsMax, "10", "20");
+                if (nullableViewMax.HasValue)
+                {
+                    viewMax = nullableViewMax.Value;
+                }
+            }
+            //read the tables
+            DxfObject tablesBody = GetObject.FromDxf(tablesSection, Has.Key("list"));
 
-/*
+            //read the layers
+            DxfObject layerTable = GetObject.FromDxf(tablesBody, Has.Object(Has.Property("2", "LAYER")));
+            DxfObject layersListObject = GetObject.FromDxf(layerTable, Has.Key("list"));
+            foreach (DxfObject layer in layersListObject.DataList)
+            {
+                DxfProperty layerName = GetObject.FromDxf(layer, Has.Key("2"));
+                Console.WriteLine("Layer: " + layerName.Value);
+                layers.Add(layerName.Value);
+            }
+
             //save the blocks
-            DxfObject blocksSection = dxfObject.GetEntry("Section:BLOCKS");
-            DxfObject blocks = blocksSection.GetEntry("Blocks Body");
-            foreach(DxfObject block in blocks.DataList)
+            DxfObject blocksBody = GetObject.FromDxf(blocksSection,Has.Key("list"));
+            foreach(DxfObject block in blocksBody.DataList)
             {
                 string blockName = GetBlockName(block);
                 blockName = blockName.ToUpper();
@@ -126,12 +139,10 @@ namespace DxfViewer
             }
 
             //convert the entities
-            DxfObject entitiesSection = dxfObject.GetEntry("Section:ENTITIES");
-            DxfObject entities = entitiesSection.GetEntry("Entities Body");
-
+            DxfObject entitiesBody = GetObject.FromDxf(entitiesSection, Has.Key("list"));
             Transform baseTransform = Transform.Identity;
 
-            foreach(DxfObject entity in entities.DataList)
+            foreach(DxfObject entity in entitiesBody.DataList)
             {
                 ProcessEntity(entity,baseTransform,geomList);
             }
@@ -144,7 +155,7 @@ namespace DxfViewer
                 sb.Append("; ");
             }
             MessageBox.Show(sb.ToString(), "Unsupported Entity Types");
-*/
+
         }
         #endregion
 
@@ -172,18 +183,14 @@ namespace DxfViewer
 
         private List<dynamic> GetBlockEntities(DxfObject block)
         {
-            //get the body from the block section
-            DxfObject blockBody = block.DataList[1];
-            
-
-            //@todo - add a constant for the entity name - or better yet, figure out a better way to do this.
-            if (blockBody.Key == "Entities Body")
+            //get the body is the list section
+            DxfObject blockBody = block.GetEntry("list");
+            if(blockBody != null)
             {
                 return blockBody.DataList;
             }
             else
             {
-                //no body
                 return null;
             }
         }

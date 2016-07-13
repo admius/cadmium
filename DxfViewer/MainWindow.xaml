@@ -15,8 +15,8 @@
                 <MenuItem Header="_Exit"  Click="menuFile_Exit"/>
             </MenuItem>
         </Menu>
-        <Canvas Name="panel" ClipToBounds="True" MouseWheel="panel_MouseWheel" MouseDown="panel_MouseDown" MouseMove="panel_MouseMove" MouseUp="panel_MouseUp" MouseLeave="panel_MouseLeave">
-            <Canvas Name="displayCanvas"/>
+        <Canvas Name="panel" Background="LightGray" ClipToBounds="True"  MouseWheel="panel_MouseWheel" MouseDown="panel_MouseDown" MouseMove="panel_MouseMove" MouseUp="panel_MouseUp" MouseLeave="panel_MouseLeave">
+            <Canvas Name="displayCanvas" Background="White"/>
         </Canvas>
     </DockPanel>
 </Window>

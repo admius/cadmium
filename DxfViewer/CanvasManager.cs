@@ -86,10 +86,20 @@ namespace DxfViewer
             //clear the canvas
             canvas.Children.Clear();
 
+            //position canvas
+            canvas.Width = data.ViewWidth;
+            canvas.Height = data.ViewHeight;
+            Canvas.SetLeft(canvas, data.ViewX);
+            Canvas.SetTop(canvas, data.ViewY);
+
+            //add children
             foreach (Shape shape in data.GeomList)
             {
                 canvas.Children.Add(shape);     
             }
+
+            
+
         }
     }
 
