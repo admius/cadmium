@@ -40,7 +40,7 @@ namespace DxfLib.Parser
             {
                 //create list data object
                 DataObject = new DxfObject();
-                DataObject.Key = "list";
+                DataObject.Code = "list";
                 //add latest entry to list
                 DataObject.AddEntry(activeParser.DataObject);
                 return true;

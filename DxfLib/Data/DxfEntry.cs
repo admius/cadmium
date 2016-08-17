@@ -9,8 +9,20 @@ namespace DxfLib.Data
 {
     public class DxfEntry
     {
-        public string code;
-        public string value;
+        private string code;
+        private string value;
+
+        public string Code
+        {
+            get { return code; }
+            set { code = value; }
+        }
+
+        public string Value
+        {
+            get { return value; }
+            set { this.value = value; }
+        }
 
         public void DebugPrint(TextWriter stream, int indentCount)
         {

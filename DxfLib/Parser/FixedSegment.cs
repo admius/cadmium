@@ -27,12 +27,12 @@ namespace DxfLib.Parser
 
         public override bool IsDelimiter(DxfEntry entry)
         {
-            bool isDelim = (this.delimCode.Equals(entry.code)) && (this.delimValue.Equals(entry.value));
+            bool isDelim = (this.delimCode.Equals(entry.Code)) && (this.delimValue.Equals(entry.Value));
 
             if (isDelim)
             {
                 this.DataObject = new DxfObject();
-                this.DataObject.Key = this.delimValue;
+                this.DataObject.Code = this.delimValue;
                 return true;
             }
             else
@@ -44,22 +44,17 @@ namespace DxfLib.Parser
         public override void AddEntry(DxfEntry entry)
         {
 
-            string valueName = bodyConfig[entry.code];
+            string valueName = bodyConfig[entry.Code];
             if (valueName != null)
             {
                 //this is a value entry - read the property directly
-                AddProperty(entry.code, entry.value);
+                DataObject.AddEntry(entry);
             }
             else
             {
                 //unknown value!!!
                 ProcessUnknownEntry(entry);
             }
-        }
-
-        protected void AddProperty(string key, string value)
-        {
-            DataObject.AddEntry(new DxfProperty(key, value));
         }
 
         /// <summary>
@@ -69,9 +64,9 @@ namespace DxfLib.Parser
         protected void ProcessUnknownEntry(DxfEntry entry)
         {
             //print message
-//            Console.WriteLine("Unknown entry: " + entry.code + ": " + entry.value);
-            //add it to properties with the code as the key
-            AddProperty(entry.code, entry.value);
+            //Console.WriteLine("Unknown entry: " + entry.Code + ": " + entry.Value);
+            //add it as another entry
+            DataObject.AddEntry(entry);
         }
     }
 }

@@ -23,8 +23,8 @@ namespace DxfLib.Data
             if (currentLine <= lines.Count - 2)
             {
                 DxfEntry entry = new DxfEntry();
-                entry.code = ReadString().Trim();
-                entry.value = ReadString().Trim();
+                entry.Code = ReadString().Trim();
+                entry.Value = ReadString().Trim();
                 return entry;
             }
             else

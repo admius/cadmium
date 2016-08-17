@@ -86,16 +86,16 @@ namespace DxfViewer
             this.docObject = docObject;
 
             //read the layers
-            List<dynamic> sectionList = GetList.FromDxf(this.docObject, Has.Key("SECTION"));
+            List<dynamic> sectionList = GetList.FromDxf(this.docObject, Has.Code("SECTION"));
 
-            DxfObject headerSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Key("SECTION"), Has.Property("2", "HEADER"))));
-            DxfObject tablesSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Key("SECTION"), Has.Property("2", "TABLES"))));
-            DxfObject blocksSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Key("SECTION"), Has.Property("2", "BLOCKS"))));
-            DxfObject entitiesSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Key("SECTION"), Has.Property("2", "ENTITIES"))));
+            DxfObject headerSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Code("SECTION"), Has.Property("2", "HEADER"))));
+            DxfObject tablesSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Code("SECTION"), Has.Property("2", "TABLES"))));
+            DxfObject blocksSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Code("SECTION"), Has.Property("2", "BLOCKS"))));
+            DxfObject entitiesSection = GetObject.FromList(sectionList, Has.Object(Has.Both(Has.Code("SECTION"), Has.Property("2", "ENTITIES"))));
 
             //read the dimensions
-            DxfObject headBody = GetObject.FromDxf(headerSection, Has.Key("list"));
-            DxfObject extentsMin = GetObject.FromDxf(headBody, Has.Key("$EXTMIN"));
+            DxfObject headBody = GetObject.FromDxf(headerSection, Has.Code("list"));
+            DxfObject extentsMin = GetObject.FromDxf(headBody, Has.Code("$EXTMIN"));
             if (extentsMin != null)
             {
                 extentsMin.DebugPrint(Console.Out, 0);
@@ -106,7 +106,7 @@ namespace DxfViewer
                 }
             }
 
-            DxfObject extentsMax = GetObject.FromDxf(headBody, Has.Key("$EXTMAX"));
+            DxfObject extentsMax = GetObject.FromDxf(headBody, Has.Code("$EXTMAX"));
             if (extentsMax != null)
             {
                 extentsMax.DebugPrint(Console.Out, 0);
@@ -117,20 +117,20 @@ namespace DxfViewer
                 }
             }
             //read the tables
-            DxfObject tablesBody = GetObject.FromDxf(tablesSection, Has.Key("list"));
+            DxfObject tablesBody = GetObject.FromDxf(tablesSection, Has.Code("list"));
 
             //read the layers
             DxfObject layerTable = GetObject.FromDxf(tablesBody, Has.Object(Has.Property("2", "LAYER")));
-            DxfObject layersListObject = GetObject.FromDxf(layerTable, Has.Key("list"));
+            DxfObject layersListObject = GetObject.FromDxf(layerTable, Has.Code("list"));
             foreach (DxfObject layer in layersListObject.DataList)
             {
-                DxfProperty layerName = GetObject.FromDxf(layer, Has.Key("2"));
-                Console.WriteLine("Layer: " + layerName.Value);
-                layers.Add(layerName.Value);
+                DxfEntry layerNameEntry = GetObject.FromDxf(layer, Has.Code("2"));
+                Console.WriteLine("Layer: " + layerNameEntry.Value);
+                layers.Add(layerNameEntry.Value);
             }
 
             //save the blocks
-            DxfObject blocksBody = GetObject.FromDxf(blocksSection,Has.Key("list"));
+            DxfObject blocksBody = GetObject.FromDxf(blocksSection,Has.Code("list"));
             foreach(DxfObject block in blocksBody.DataList)
             {
                 string blockName = GetBlockName(block);
@@ -139,7 +139,7 @@ namespace DxfViewer
             }
 
             //convert the entities
-            DxfObject entitiesBody = GetObject.FromDxf(entitiesSection, Has.Key("list"));
+            DxfObject entitiesBody = GetObject.FromDxf(entitiesSection, Has.Code("list"));
             Transform baseTransform = Transform.Identity;
 
             foreach(DxfObject entity in entitiesBody.DataList)
@@ -273,7 +273,7 @@ namespace DxfViewer
         #region Entity Processing
         private void ProcessEntity(DxfObject entity, Transform transform, List<Shape> geomList)
         {
-            string type = entity.Key;
+            string type = entity.Code;
         
             switch(type)
             {

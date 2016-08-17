@@ -35,7 +35,7 @@ namespace DxfLib
             bool started = false;
             while ((entry = entryReader.ReadEntry()) != null)
             {
-                //                Console.WriteLine("Entry: " + entry.code + ": " + entry.value);
+                //Console.WriteLine("Entry: " + entry.Code + ": " + entry.Value);
                 if (!started)
                 {
                     //this better be true

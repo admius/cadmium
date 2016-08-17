@@ -9,10 +9,10 @@ namespace DxfLib.Data
 {
     public class DxfObject
     {
-        private string key = "<unspecified>";
+        private string code = "<unspecified>";
 
         //data list entries should have two methods:
-        //key - the name for the object
+        //Code - the name for the object
         //DebugPrint(streamwriter,indentCount) - prints the object
         private List<dynamic> dataList = new List<dynamic>();
 
@@ -20,10 +20,10 @@ namespace DxfLib.Data
         {
         }
 
-        public string Key
+        public string Code
         {
-            get { return key; }
-            set { key = value;  }
+            get { return code; }
+            set { code = value;  }
         }
 
         public List<dynamic> DataList
@@ -34,13 +34,13 @@ namespace DxfLib.Data
         /// <summary>
         /// This returns the data associated with a given entry.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="code"></param>
         /// <returns></returns>
-        public dynamic GetEntry(string key, int nth = 0)
+        public dynamic GetEntry(string code, int nth = 0)
         {
             foreach(dynamic entry in dataList)
             {
-                if(entry.Key.Equals(key))
+                if(entry.Code.Equals(code))
                 {
                     if(nth-- <= 0) return entry;
                 }
@@ -57,10 +57,10 @@ namespace DxfLib.Data
         /// <returns></returns>
         public string GetStringValue(string code, int nth = 0)
         {
-            DxfProperty prop = GetEntry(code,nth);
-            if (prop != null)
+            DxfEntry entry = GetEntry(code, nth);
+            if (entry != null)
             {
-                return prop.Value;
+                return entry.Value;
             }
             else
             {
@@ -76,10 +76,10 @@ namespace DxfLib.Data
         /// <returns></returns>
         public int? GetIntValue(string code, int nth = 0)
         {
-            DxfProperty prop = GetEntry(code,nth);
-            if (prop != null)
+            DxfEntry entry = GetEntry(code, nth);
+            if (entry != null)
             {
-                return Int32.Parse(prop.Value);
+                return Int32.Parse(entry.Value);
             }
             else
             {
@@ -95,10 +95,10 @@ namespace DxfLib.Data
         /// <returns></returns>
         public double? GetDoubleValue(string code, int nth = 0)
         {
-            DxfProperty prop = GetEntry(code,nth);
-            if (prop != null)
+            DxfEntry entry = GetEntry(code, nth);
+            if (entry != null)
             {
-                return Double.Parse(prop.Value);
+                return Double.Parse(entry.Value);
             }
             else
             {
@@ -118,7 +118,7 @@ namespace DxfLib.Data
             {
                 stream.Write("\t");
             }
-            stream.WriteLine(key);
+            stream.WriteLine(code);
             foreach(dynamic entry in dataList)
             {
                 entry.DebugPrint(stream, indentCount + 1);

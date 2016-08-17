@@ -23,11 +23,11 @@ namespace DxfLib.Parser
 
         public override bool IsDelimiter(DxfEntry entry)
         {
-            if(entry.code.Equals(delimCode))
+            if(entry.Code.Equals(delimCode))
             {
                 //instantiate object with proper name
                 DataObject = new DxfObject();
-                DataObject.Key = entry.value;
+                DataObject.Code = entry.Value;
                 return true;
             }
             else
@@ -40,7 +40,7 @@ namespace DxfLib.Parser
         public override void AddEntry(DxfEntry entry)
         {
             //this is a value entry
-            DataObject.AddEntry(new DxfProperty(entry.code, entry.value));
+            DataObject.AddEntry(entry);
         }
 
     }

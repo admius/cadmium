@@ -51,7 +51,7 @@ namespace DxfLib.Parser
 
                 //prepare to read header body
                 DataObject = new DxfObject();
-                DataObject.Key = entry.value;
+                DataObject.Code = entry.Value;
                 DataObject.AddEntry(headerParser.DataObject);
                 return true;
             }
@@ -127,9 +127,9 @@ namespace DxfLib.Parser
                     throw new Exception("header object not found!");
                 }
 
-                DxfProperty property = headerObject.GetEntry(headerField);
+                DxfEntry entry = headerObject.GetEntry(headerField);
                 string prefix = bodyParserInfo["parserNamePrefix"];
-                parserName = prefix + property.Value;
+                parserName = prefix + entry.Value;
             }
             else
             {

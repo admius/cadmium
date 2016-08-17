@@ -24,29 +24,29 @@ namespace DxfLib.Query
     public class Has
     {
         /// <summary>
-        /// The returned filter matches an item with the given key.
+        /// The returned filter matches an item with the given Code.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="code"></param>
         /// <returns></returns>
-        public static Matches Key(string key)
+        public static Matches Code(string code)
         {
             return delegate (dynamic testObject)
             {
-                return key.Equals(testObject.Key, StringComparison.CurrentCultureIgnoreCase);
+                return code.Equals(testObject.Code, StringComparison.CurrentCultureIgnoreCase);
             };
         }
 
         /// <summary>
         /// Th returned filter matches an item with the given value It should be used on DxfObjects with property children. 
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="code"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static Matches Property(string key, string value)
+        public static Matches Property(string code, string value)
         {
             return delegate (dynamic testObject)
             {
-                string testValue = testObject.GetStringValue(key);
+                string testValue = testObject.GetStringValue(code);
                 return value.Equals(testValue, StringComparison.CurrentCultureIgnoreCase);
             };
         }
